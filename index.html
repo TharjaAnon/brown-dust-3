@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brown Dust 3 — Move Lab 3.2</title>
+<title>Brown Dust 3 — Move Lab 3.3</title>
 <style>
 html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:monospace;color:#eee}
 #c{display:block;width:100vw;height:100vh;touch-action:none;cursor:crosshair}
@@ -49,7 +49,7 @@ html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:mo
 <button id="btnToggle" type="button" aria-controls="loadout">LOADOUT</button>
 <aside id="loadout" class="collapsed" aria-hidden="true">
   <div class="head">
-    <h1>MOVE LAB 3.2</h1>
+    <h1>MOVE LAB 3.3</h1>
     <span id="countLabel"></span>
     <button id="btnCloseLoadout" type="button" title="Close loadout">✕ CLOSE</button>
   </div>
@@ -64,6 +64,7 @@ html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:mo
     <button id="btnMove" type="button">DUMMY MOVE</button>
     <button id="btnLow" type="button">LOW GFX</button>
     <button id="btnImpact" type="button">IMPACT</button>
+    <button id="btnRoll" type="button">ROLL BUILD</button>
   </div>
   <div id="slotTabs" class="chips"></div>
   <div id="schoolFilters" class="chips"></div>
@@ -430,6 +431,159 @@ add({id:'aura_monk',name:'Aura Monk',school:'Light',wpn:'fist',
   b('Nirvana Quake',.85,['sm',{hop:.3,at:20,r:90,d:30}],['qk',{t:.32,n:5,gap:60,d:34,up:340}])],
  ws:{n:'Enlightenment',a:[['bf',{dmg:1.3,dur:6,n2:'ENLIGHTENED'}],['pl',{pat:'ring',n:8,rr:120,stag:.03,r:40,hh:220,d:40}],['qk',{t:.4,n:6,gap:60,d:44,up:380}]]}});
 
+/* ================= NEW IN 3.3 — ROGUELIKE BUILD PIECES ================= */
+/* Each set below leans on a mechanic the older sets don't have:
+   ctr = counter stance (get hit → riposte nova)   exe = execute low-HP foes
+   wp  = whip lash / pull / grapple-zip            mine = traps & detonator
+   jump= projectiles that ricochet foe→foe         imp = gravity snare → implosion
+   det = shatter/detonate afflicted foes           au  = follow aura      cl = storm coils */
+add({id:'iaido',name:'Iaido Saint',school:'Sword',wpn:'katana',heft:1.1,
+ fantasy:'Stance duelist. Quiet cuts build to a parry stance: get hit while sheathed and the blade answers with a riposte nova. Weakened foes are EXECUTED outright.',
+ inspo:'Swordmaster / Hero: Counter stance, Vantage-style riposte, Execute-style finishers',
+ string:[s('Sheath Slip',.2,['th',{d:20,r:112,ln:20}]), s('Draw Cut',.22,['sl',{d:26,arc:1.5,r:96,ln:34}]), s('Reverse Draw',.22,['sl',{d:26,arc:1.5,r:96,side:-1,ln:20}]),
+  s('Flash Step',.26,['ds',{dist:190,dur:.1,d:30,w:30}]), s('Moon Cut',.32,['sl',{d:28,arc:2.2,r:100}],['wv',{t:.06,w:120,v:640,life:.4,d:34}])],
+ branch:[b('Counter Stance',.7,['ctr',{dur:.9,cd:90,cr:150,heal:30,br:50}]),
+  b('Silent Cut',.55,['ds',{dist:240,dur:.08,d:46,w:34}],['exe',{t:.12,circ:1,r:120,thr:.3,d:40}]),
+  b('Shadow Draw',.6,['tp',{mode:'behind',range:280}],['exe',{t:.1,arc:2.6,r:110,thr:.35,d:54}]),
+  b('Falling Petals',.65,['fl',{n:6,iv:.04,r:90,arc:1.4,d:12,ln:60}],['wv',{t:.3,n:3,sp:.5,w:110,v:700,life:.4,d:30}]),
+  b('Death Mark',.7,['mk',{r:300,arc:6.3,max:10,ex:60,d:46,delay:.7}],['ds',{t:.1,dist:170,dur:.1,d:26}]),
+  b('Sheathed Moon',.8,['ctr',{dur:1.1,cd:130,cr:190,up:520,kb:420,br:80,st:{stun:1.2}}])],
+ ws:{n:'Heaven-Cleaving Draw',a:[['ds',{dist:320,dur:.09,d:70,w:44}],['ds',{t:.2,dist:320,off:PI,dur:.09,d:70,w:44}],['exe',{t:.5,circ:1,r:230,thr:.45,d:150,heal:.04}],['wv',{t:.55,n:5,sp:2.4,w:150,v:820,life:.5,d:60}]]}});
+
+add({id:'ashen_gs',name:'Ashen Greatsword',school:'Sword',wpn:'greatsword',heft:1.7,
+ fantasy:'Slow, enormous steel. Every swing cracks armor gauges open and throws ash-shockwaves; built to delete knights and golems.',
+ inspo:'Great Knight / Hero: heavy cleaves with weak-point smash, shockwave arts',
+ string:[s('Heavy Cleave',.42,['sl',{d:44,arc:2.3,r:118,ln:20,br:14}]), s('Back Cleave',.42,['sl',{d:44,arc:2.4,r:118,side:-1,br:14}]),
+  s('Ash Rend',.46,['sl',{d:36,arc:1.6,r:112}],['wv',{t:.1,w:150,v:560,life:.5,d:40,br:12}]), s('Crater Drop',.5,['sm',{hop:.2,at:70,r:104,d:60,br:24,shk:10}])],
+ branch:[b('Armor Cracker',.7,['sl',{d:60,arc:1.8,r:122,br:44,ln:30}],['kk',{t:.2,d:30,kb:500,wb:1,br:20}]),
+  b('Shockwave Line',.7,['sm',{hop:.15,at:60,r:90,d:44,br:20}],['pl',{t:.2,pat:'line',n:7,gap:56,at:100,stag:.04,r:40,d:36,hh:120,br:12}]),
+  b('Rising Ruin',.75,['up',{d:56,r:116,up:660,br:30}],['sm',{t:.46,at:60,r:104,d:60,br:30}]),
+  b('Ash Tempest',.85,['sp',{n:6,r:126,iv:.1,mv:90,d:26,br:14}]),
+  b('Sword Plant',.85,['sm',{hop:.3,at:30,r:116,d:50,br:30}],['qk',{t:.3,n:4,gap:55,d:34,br:14}]),
+  b('Execution Arc',.9,['exe',{r:130,arc:2.6,d:90,thr:.4,w:34,ln:30}],['wv',{t:.2,n:3,sp:.9,w:160,v:700,life:.5,d:44}])],
+ ws:{n:'Ragnarok Cleave',a:[['sm',{hop:.3,at:40,r:150,d:120,br:60,shk:14}],['wv',{t:.35,n:7,sp:3.2,w:170,v:760,life:.55,d:70,br:30}],['qk',{t:.7,n:5,gap:60,d:60,br:20}]]}});
+
+add({id:'serpent',name:'Serpent Whip',school:'Lance',wpn:'whip',heft:.9,
+ fantasy:'Grapple-reach whip. Lashes strike at range, hook foes into a pile, or zip YOU into the fight; pulled crowds get slammed together.',
+ inspo:'Whip Knight / Ranger: reach lashes, grapple-pulls, zip strikes',
+ string:[s('Lash',.2,['wp',{len:250,w:14,d:18}]), s('Return Lash',.2,['wp',{len:250,w:14,d:18,off:.28}]), s('Hook Pull',.26,['wp',{len:300,w:34,d:14,mode:'pull'}]),
+  s('Coil Spin',.28,['sp',{n:2,r:112,iv:.09,d:20}]), s('Tip Crack',.32,['wp',{len:330,w:20,d:34,kb:300}])],
+ branch:[b('Grapple Zip',.55,['wp',{len:340,w:20,d:30,mode:'zip'}],['sl',{t:.14,d:36,arc:2.2,r:84}]),
+  b('Hook & Slam',.7,['wp',{len:320,w:50,d:12,mode:'pull'}],['sm',{t:.3,at:50,r:100,d:46}]),
+  b('Cobra Strike',.6,['th',{n:5,iv:.05,r:160,jit:.3,d:16,ln:70}],['wp',{t:.3,len:300,w:30,d:40,kb:400,wb:1}]),
+  b('Whirlwind Coil',.75,['sp',{n:6,r:128,iv:.08,d:18,mv:60,pull:1}]),
+  b('Tether Toss',.65,['gr',{d:50,r:150}]),
+  b("Serpent's Verdict",.85,['wp',{len:360,w:90,d:16,mode:'pull'}],['qk',{t:.35,n:3,gap:55,d:36,up:360}],['wp',{t:.6,len:340,w:40,d:60,kb:500,wb:1}])],
+ ws:{n:'Ouroboros',a:[['wp',{len:380,w:140,d:20,mode:'pull'}],['sp',{t:.3,n:10,r:140,iv:.07,d:30,pull:1}],['sm',{t:1.1,hop:.3,at:0,r:180,d:130,shk:12}]]}});
+
+add({id:'javelin',name:'Javelin Storm',school:'Lance',wpn:'lance',heft:1.05,
+ fantasy:'Throwing spears that ricochet from foe to foe. Chain-kills snowball; the big throws detonate on impact.',
+ inspo:'Spear Fighter / Hero: javelin throws, chained impaling, thrown-lance volleys',
+ string:[s('Spear Jab',.2,['th',{d:20,r:120}]), s('Javelin',.24,['pj',{sh:'lance',v:900,life:.6,r:12,jump:3,d:22}]), s('Twin Javelins',.26,['pj',{n:2,sp:.35,sh:'lance',v:900,life:.6,r:12,jump:2,d:18}]),
+  s('Pole Vault',.26,['mv',{dist:90,dur:.16,hop:1}],['th',{t:.14,r:150,w:20,d:30}]), s('Spear Wall',.34,['th',{n:4,iv:.05,r:135,jit:.9,d:14}])],
+ branch:[b('Ricochet Chain',.55,['pj',{sh:'lance',v:1000,life:.9,r:14,jump:8,d:26,jr:380}]),
+  b('Skewer Volley',.65,['pj',{n:5,sp:.9,sh:'lance',v:880,life:.6,r:12,jump:2,d:20}]),
+  b('Impale',.65,['ds',{dist:200,dur:.12,d:34,w:30}],['th',{t:.14,r:170,w:26,d:48,kb:480,wb:1}]),
+  b('Spear Rain',.75,['rn',{sh:'lance',at:190,r:120,n:14,dur:.8,dr:30,d:20}]),
+  b('Lance Barrage',.7,['pj',{n:9,sp:2,stag:.04,sh:'lance',v:960,life:.55,r:12,jump:1,d:16}]),
+  b('Skyfall Javelin',.85,['mv',{dist:30,dur:.3,hop:1}],['pj',{t:.25,sh:'lance',v:1100,life:.8,r:20,jump:5,ex:80,exd:60,d:60}])],
+ ws:{n:'Ten Thousand Javelins',a:[['pj',{n:12,ring:1,sh:'lance',v:900,life:.8,r:14,jump:6,d:28,jr:400}],['rn',{t:.3,self:1,sh:'lance',n:28,r:240,dur:1.2,dr:36,d:36,h0:320}]]}});
+
+add({id:'siege_hammer',name:'Siege Sapper',school:'Axe',wpn:'hammer',heft:1.6,
+ fantasy:'Demolitions hammer. Plant powder kegs, smash them off, or hit the detonator: kegs chain-explode and launch whole crowds.',
+ inspo:'Fortress Knight / Mercenary: heavy hammer + sapper set-piece blasts',
+ string:[s('Mallet Bash',.34,['sl',{d:32,arc:2,r:96,br:10}]), s('Return Bash',.34,['sl',{d:32,arc:2,r:96,side:-1,br:10}]), s('Plant Keg',.3,['mine',{at:70,r:90,d:40,dur:8}]),
+  s('Keg Kick',.28,['kk',{d:20,kb:520,wb:1}],['mine',{t:.1,at:140,r:90,d:40,dur:8}]), s('Fuse Smash',.42,['sm',{at:60,r:90,d:44,br:20}])],
+ branch:[b('Powder Trail',.6,['mine',{pat:'line',n:5,gap:60,at:70,stag:.05,r:84,d:40,dur:8}]),
+  b('Keg Toss',.6,['pj',{n:3,sp:.5,sh:'bomb',v:520,life:.55,ex:80,exd:48,d:12}]),
+  b('Sapper Ring',.7,['mine',{pat:'ring',n:6,rr:110,stag:.03,r:90,d:42,dur:8}]),
+  b('Detonator',.55,['sm',{hop:.2,at:40,r:90,d:30}],['mine',{t:.3,det:1}]),
+  b('Mass Demolition',.8,['rn',{sh:'meteor',at:170,r:110,n:8,dur:.9,dr:48,d:34,sz:1.1,fd:.35}]),
+  b('Bunker Buster',.9,['mine',{pat:'ring',n:8,rr:90,r:100,d:50,dur:6,arm:.2}],['sm',{t:.4,hop:.25,at:20,r:120,d:60,br:40}],['mine',{t:.8,det:1}])],
+ ws:{n:'Grand Demolition',a:[['mine',{pat:'scatter',n:14,rr:230,at:0,stag:.04,r:100,d:70,dur:4,arm:.1}],['mine',{t:1.0,det:1}],['qk',{t:1.2,n:5,gap:60,d:60,up:420}]]}});
+
+add({id:'chakram',name:'Chakram Dancer',school:'Bow',wpn:'chakram',heft:.9,
+ fantasy:'Razor rings that bounce between foes and boomerang home. Keep the air full of orbiting blades and let the ricochets do the killing.',
+ inspo:'Dancer / Bow Knight: thrown rings, ricochet chains, orbiting blades',
+ string:[s('Ring Toss',.2,['pj',{sh:'ring',v:820,life:.7,r:14,jump:2,d:18}]), s('Twin Rings',.22,['pj',{n:2,sp:.5,sh:'ring',v:820,life:.7,r:14,jump:2,d:15}]),
+  s('Boomerang',.26,['pj',{sh:'ring',boom:1,v:700,life:1.1,r:20,d:24,pierce:99}]), s('Pirouette',.28,['sp',{n:2,r:86,iv:.08,d:16}],['pj',{t:.1,n:4,ring:1,sh:'ring',v:640,life:.5,d:12}]),
+  s('Ring Fan',.32,['pj',{n:5,sp:1.1,sh:'ring',v:800,life:.6,r:12,jump:1,d:15}])],
+ branch:[b('Ricochet Chain',.55,['pj',{sh:'ring',v:1000,life:1,r:16,jump:9,jr:400,d:24}]),
+  b('Razor Orbit',.65,['bl',{pat:'orbit',n:5,sh:'ring',r0:80,w:8,life:2.2,d:14,pierce:99}]),
+  b('Bladestorm Dance',.7,['sp',{n:5,r:100,iv:.08,mv:80,d:16}],['pj',{t:.1,n:10,ring:1,stag:.03,sh:'ring',v:720,life:.5,jump:1,d:14}]),
+  b('Twin Boomerangs',.65,['pj',{n:2,sp:1.3,sh:'ring',boom:1,v:680,life:1.2,r:20,d:26,pierce:99}]),
+  b('Seeking Ring',.6,['pj',{n:3,sp:.8,sh:'ring',home:4,v:700,life:1,r:16,jump:3,d:22}]),
+  b('Executioner Ring',.8,['pj',{sh:'ring',v:760,life:1.4,r:34,boom:1,pierce:99,d:48,kb:240}],['exe',{t:.1,circ:1,r:90,thr:.25,d:20}])],
+ ws:{n:'Thousand-Ring Waltz',a:[['bl',{pat:'orbit',n:8,sh:'ring',r0:90,w:9,life:3,d:20,pierce:99}],['pj',{t:.2,n:18,ring:1,sh:'ring',v:760,life:.9,r:16,jump:5,d:26,jr:420}],['bl',{t:1.2,pat:'spiral',n:16,sh:'ring',vr:300,w:6,life:1,d:24}]]}});
+
+add({id:'phoenix',name:'Phoenix Pyre',school:'Fire',wpn:'tome',heft:1.1,
+ fantasy:'Self-immolating pyromancer. Wraps you in a burning aura, dives as a phoenix and is reborn from the flames: all fire, all up close.',
+ inspo:'Fire Sage / Gremory: close-range fire, aura and dive finishers',
+ string:[s('Cinder Wing',.2,['pj',{n:2,sp:.5,sh:'fire',v:640,life:.5,d:15,st:BURN}]), s('Ember Dance',.24,['sp',{n:2,r:96,iv:.08,d:18,el:'Fire',st:BURN}]),
+  s('Plume Fan',.24,['pj',{n:5,sp:1.2,sh:'fire',v:620,life:.5,d:12,st:BURN}]), s('Flame Dash',.26,['ds',{dist:170,d:22,w:36,st:BURN}]),
+  s('Pyre Burst',.34,['pl',{pat:'self',r:90,d:30,up:420,hh:200,st:BURN}])],
+ branch:[b('Phoenix Dive',.7,['mv',{dist:30,dur:.24,hop:1}],['dv',{t:.2,at:240,tgt:1,r:130,d:70,dur:.34,st:BURN}]),
+  b('Burning Aura',.6,['au',{r:105,dur:6,d:9,tk:.3,st:BURN,n2:'BURNING AURA'}],['sp',{t:.1,n:2,r:96,iv:.08,d:18,st:BURN}]),
+  b('Feather Rain',.7,['rn',{sh:'fire',at:170,r:130,n:18,dur:.9,dr:34,d:16,fd:.3,st:BURN}]),
+  b('Flashover Rush',.6,['ds',{dist:230,d:26,w:40,st:BURN}],['ds',{t:.18,dist:230,off:PI,d:26,w:40,st:BURN}],['det',{t:.4,on:'burn',r:260,ex:80,d:34}]),
+  b('Solar Flare',.75,['ob',{pat:'self',r:150,delay:.55,d:70,col:'#ffd070'}]),
+  b('Rebirth Flame',.85,['hl',{heal:140,sh2:100,r:110}],['au',{t:.1,r:130,dur:5,d:12,tk:.3,st:BURN,n2:'REBIRTH'}],['pl',{t:.2,pat:'ring',n:8,rr:120,stag:.03,r:38,d:26,hh:180,st:BURN}])],
+ ws:{n:'Eternal Phoenix',a:[['au',{r:170,dur:8,d:14,tk:.25,st:BURN,n2:'ETERNAL FLAME'}],['dv',{t:.2,at:260,tgt:1,r:200,d:130,dur:.4,st:BURN}],['pl',{t:.7,pat:'scatter',n:14,rr:240,at:0,stag:.04,r:48,d:46,hh:220,st:BURN}]]}});
+
+add({id:'cryo',name:'Cryo Executioner',school:'Ice',wpn:'staff',heft:1.1,
+ fantasy:'Freeze, then SHATTER. Every string chills foes; the payoff moves detonate every frozen enemy in a chain of ice explosions.',
+ inspo:'Sage / Gremory: freeze setup into shatter finishers',
+ string:[s('Frost Bolt',.2,['pj',{sh:'shard',v:860,life:.5,d:16,st:{slow:2.5,freezeHits:2}}]), s('Rime Pulse',.24,['ms',{pat:'self',r:100,dur:.5,d:6,st:{slow:3}}]),
+  s('Icicle Trio',.24,['pj',{n:3,sp:.5,sh:'shard',v:860,life:.5,d:14,st:{slow:2.5,freezeHits:2}}]),
+  s('Cold Snap',.3,['ms',{at:110,r:80,dur:.5,d:8,st:{freeze:1.5}}]), s('Glass Cannon',.34,['det',{on:'freeze',r:230,ex:60,d:30}],['pj',{t:.05,sh:'shard',v:1100,life:.5,r:14,pierce:99,d:26}])],
+ branch:[b('Flash Freeze',.6,['ms',{pat:'self',r:170,dur:.6,d:8,st:{freeze:1.6}}]),
+  b('Shatter',.6,['det',{on:'freeze',r:300,ex:90,d:70,stag:.05,up:420}]),
+  b('Glacial Lance',.65,['pj',{sh:'shard',v:1200,life:.6,r:18,pierce:99,d:46,kb:300,st:{freeze:.9}}]),
+  b('Permafrost',.7,['au',{r:120,dur:6,d:6,tk:.35,st:{slow:3},n2:'PERMAFROST'}],['ms',{t:.1,pat:'self',r:150,dur:.5,d:6,st:{freeze:.9}}]),
+  b('Ice Maiden',.7,['tu',{pat:'ring',n:3,rr:66,fol:1,dur:5,iv:.4,d:14,look:'crystal',st:{slow:2.5,freezeHits:2}}]),
+  b('Absolute Shatter',.9,['ms',{pat:'self',r:200,dur:.5,d:6,st:{freeze:1.4}}],['det',{t:.55,on:'freeze',r:300,ex:110,d:90,stag:.04,up:520}],['qk',{t:.7,n:3,gap:55,d:30,up:260}])],
+ ws:{n:'Heart of Winter',a:[['ms',{pat:'self',r:280,dur:.7,d:8,st:{freeze:2}}],['det',{t:.7,on:'freeze',r:300,ex:120,d:120,stag:.03,up:560}],['rn',{t:1,self:1,sh:'ice',n:24,r:270,dur:1,dr:34,d:40}]]}});
+
+add({id:'tesla',name:'Tesla Engineer',school:'Electric',wpn:'staff',heft:1,
+ fantasy:'Plants storm coils that chain-zap every foe nearby and arc between each other. Build a lightning grid, then fight inside it.',
+ inspo:'Dark Bishop / Engineer: summoned conduits, linked lightning, overload bursts',
+ string:[s('Static Spark',.2,['ch',{n:3,r:240,d:14}]), s('Coil Drop',.26,['cl',{at:110,n:1,dur:6,iv:.5,zn:280,d:12}]), s('Arc Bolt',.22,['bm',{n:2,sp:.3,len:300,w:14,d:16}]),
+  s('Surge Step',.24,['ds',{dist:150,d:16,w:26,st:{stun:.3}}]), s('Overcharge',.34,['bt',{pat:'ring',n:5,rr:90,r:34,d:20,bw:5}])],
+ branch:[b('Twin Coils',.6,['cl',{pat:'fan',n:2,sp:1.6,at:130,dur:7,iv:.45,zn:300,d:14}]),
+  b('Coil Grid',.75,['cl',{pat:'ring',n:4,rr:130,dur:8,iv:.4,zn:300,d:14,stag:.05}]),
+  b('Tesla Burst',.65,['bt',{pat:'tgt',n:6,range:320,stag:.05,r:40,d:26,bw:6}],['ch',{t:.3,n:6,r:280,d:22}]),
+  b('Storm Wall',.65,['cl',{pat:'line',n:5,gap:70,at:90,dur:6,iv:.35,zn:240,d:12,stag:.04}]),
+  b('Railcoil',.7,['bm',{len:560,w:34,d:54,kb:260}],['cl',{t:.2,at:300,n:1,dur:6,iv:.5,zn:300,d:14}]),
+  b('Overload',.9,['bt',{pat:'ring',n:10,rr:160,stag:.03,r:42,d:30,bw:6,st:{stun:.6}}],['bm',{t:.4,n:8,ring:1,len:260,w:20,d:30}])],
+ ws:{n:'Grid Collapse',a:[['cl',{pat:'ring',n:8,rr:200,dur:5,iv:.25,zn:320,d:22,stag:.03}],['bt',{t:.6,pat:'scatter',n:24,rr:250,at:0,stag:.04,r:46,d:36,bw:6,st:{stun:.4}}]]}});
+
+add({id:'void',name:'Void Singularity',school:'Dark',wpn:'tome',heft:1.15,
+ fantasy:'Gravity witch. Snare crowds into a single point, crush them, then collapse the pile. Sets up black-hole finishers.',
+ inspo:'Sorcerer / Dark Bishop: gravity wells, collapse orbs, rift steps',
+ string:[s('Void Bolt',.2,['pj',{sh:'orb',v:660,life:.6,d:16,home:2}]), s('Gravity Snare',.28,['imp',{at:130,r:110,delay:.4,ex:60,d:30}]), s('Rift Fan',.24,['pj',{n:4,sp:.9,sh:'orb',v:560,life:.6,d:12,home:3}]),
+  s('Drift Step',.22,['tp',{mode:'aim',dist:140}]), s('Collapse',.34,['ob',{at:130,r:80,delay:.5,d:40}])],
+ branch:[b('Event Horizon',.75,['vx',{at:150,r:140,dur:1.2,pull:440,d:10,burst:80}]),
+  b('Singularity Crush',.7,['imp',{at:160,r:190,delay:.5,ex:120,d:80,up:520}]),
+  b('Null Lance',.65,['bm',{len:520,w:36,d:50,kb:-200}],['imp',{t:.3,at:300,r:130,delay:.4,ex:80,d:44}]),
+  b('Rift Walk',.6,['tp',{mode:'chain',n:4,iv:.1,range:280,d:24,r:50}],['ob',{t:.5,pat:'self',r:130,delay:.4,d:50}]),
+  b('Starless Night',.8,['ms',{pat:'self',r:210,dur:2.5,d:6,st:CURSE}],['imp',{t:.1,pat:'self',r:210,delay:.7,ex:140,d:70,up:480}]),
+  b('Collapse Chain',.75,['mk',{r:260,arc:6.3,max:12,ex:70,d:44,delay:.7,st:CURSE}],['imp',{t:.3,at:140,r:170,delay:.4,ex:90,d:46}])],
+ ws:{n:'Black Hole',a:[['vx',{at:200,r:280,dur:2.2,pull:520,d:14,burst:150}],['imp',{t:.4,at:200,r:260,delay:1,ex:200,d:140,up:620}]]}});
+
+add({id:'aegis',name:'Aegis Oracle',school:'Light',wpn:'staff',heft:1,
+ fantasy:'Holy counter-caster. Raise the Aegis and any hit you take becomes a blinding retaliation that heals you; spears of light finish what the nova starts.',
+ inspo:'Bishop / Paladin: protective stance, counter-nova, divine judgement',
+ string:[s('Halo Bolt',.2,['pj',{sh:'orb',v:760,life:.55,d:16}]), s('Dawn Fan',.22,['pj',{n:4,sp:.8,sh:'feather',v:700,life:.5,d:12}]), s('Sun Ring',.26,['pl',{pat:'ring',n:6,rr:96,stag:.03,r:34,d:18,hh:130,el:'Light'}]),
+  s('Lumen Step',.24,['mv',{dist:110,off:PI,dur:.16,hop:1}],['bm',{t:.1,len:290,w:16,d:20}]), s('Blessing',.34,['hl',{heal:50,sh2:60,r:90,d:20}])],
+ branch:[b('Aegis Counter',.75,['ctr',{dur:1,cd:100,cr:200,heal:120,up:520,kb:420,br:60,st:{stun:1}}],['hl',{heal:0,sh2:140,r:60}]),
+  b('Prism Beam',.65,['bm',{n:3,sp:.7,len:420,w:26,d:34}]),
+  b('Sunfall',.75,['rn',{sh:'light',at:180,r:140,n:20,dur:1,dr:34,d:16,fd:.22}]),
+  b('Redeemer',.7,['ob',{pat:'tgt',n:4,range:320,r:80,delay:.7,d:60,el:'Light'}]),
+  b('Sanctum',.85,['hl',{heal:160,sh2:160,r:170,d:26}],['au',{t:.1,r:140,dur:5,d:10,tk:.3,el:'Light',n2:'SANCTUM'}]),
+  b('Angelic Descent',.8,['mv',{dist:30,dur:.3,hop:1}],['dv',{t:.26,at:230,tgt:1,r:150,d:80,dur:.36,el:'Light'}],['pl',{t:.7,pat:'cross',n:3,at:60,gap:60,stag:.03,r:36,d:30,hh:190,el:'Light'}])],
+ ws:{n:'Dawn of Judgement',a:[['hl',{heal:250,sh2:250,r:200}],['rn',{t:.2,self:1,sh:'light',n:36,r:260,dur:1.4,dr:38,d:34,fd:.22}],['pl',{t:.8,pat:'ring',n:10,rr:170,stag:.03,r:44,d:50,hh:240,el:'Light'}]]}});
+
+
 /* ================= COMBAT ARTS (SPECIAL, cooldown) ================= */
 const ARTS=[
  {id:'wrathcut',name:'Wrathcut',school:'Sword',cd:6,desc:'Huge 200° cleave that sends a crescent wave.',inspo:'Wrath Strike-style art',a:[['sl',{d:70,arc:3.4,r:130,w:26}],['wv',{t:.08,w:160,v:700,life:.45,d:50}]]},
@@ -492,11 +646,36 @@ MOBS.push(
  {id:'rime_roll',name:'Rime Roll',school:'Ice',cd:1.6,desc:'Roll that briefly freezes foes at your start point.',a:[['ms',{pat:'self',r:80,dur:.4,d:4,st:{freeze:.8}}],['mv',{ka:1,dist:170,dur:.2,roll:1}]]},
  {id:'reaper_step',name:'Reaper Step',school:'Dark',cd:1.6,desc:'Warp behind a foe, curse and drain it.',a:[['tp',{mode:'behind',range:280,d:34,ls:.4,st:CURSE}]]},
  {id:'sunstep',name:'Sunstep',school:'Light',cd:1.2,desc:'Short i-frame step with a small heal pulse.',a:[['mv',{ka:1,dist:190,dur:.18,ifr:.25}],['hl',{t:.2,heal:30,r:70,d:14}]]});
+/* ---- 3.3 additions: combat arts + mobility + weapon heft ---- */
+ARTS.push(
+ {id:'riposte_art',name:'Iron Riposte',school:'Sword',cd:8,desc:'Parry stance for 1.2s: the first hit you take triggers a huge counter-nova.',a:[['ctr',{dur:1.2,cd:150,cr:210,up:560,kb:460,br:80,heal:60,st:{stun:1}}]]},
+ {id:'execution',name:"Executioner's Edge",school:'Sword',cd:9,desc:'Wide cleave that EXECUTES every foe under 35% HP outright.',a:[['exe',{circ:1,r:190,thr:.35,d:80,w:34,heal:.03}],['wv',{t:.05,w:180,v:760,life:.5,d:40}]]},
+ {id:'grapple_slam',name:'Grapple Slam',school:'Lance',cd:7,desc:'Whip-line hauls a crowd in, then a leaping slam on the pile.',a:[['wp',{len:380,w:130,mode:'pull',d:20}],['dv',{t:.3,at:0,r:150,d:100,dur:.3}]]},
+ {id:'barrel_bash',name:'Powder Barrage',school:'Axe',cd:9,desc:'Scatter powder kegs around you, then detonate the lot in a chain.',a:[['mine',{pat:'scatter',n:10,rr:210,at:0,stag:.03,r:92,d:50,dur:3,arm:.1}],['mine',{t:.9,det:1}]]},
+ {id:'chakram_storm',name:'Chakram Storm',school:'Bow',cd:8,desc:'Eight ricocheting rings fan out and chain between foes.',a:[['pj',{n:8,ring:1,sh:'ring',v:800,life:.9,r:16,jump:5,jr:380,d:26}]]},
+ {id:'phoenix_rise',name:'Phoenix Ascent',school:'Fire',cd:11,desc:'Ignite a huge burning aura, heal, and dive onto the nearest foe.',a:[['au',{r:150,dur:6,d:12,tk:.3,st:BURN,n2:'PHOENIX'}],['hl',{heal:120,r:80}],['dv',{t:.2,at:230,tgt:1,r:170,d:110,dur:.36,st:BURN}]]},
+ {id:'storm_grid',name:'Storm Grid',school:'Electric',cd:10,desc:'Three conduit coils chain-zap everything nearby for 7s.',a:[['cl',{pat:'ring',n:3,rr:110,dur:7,iv:.35,zn:300,d:18}]]},
+ {id:'glacier_shatter',name:'Glacier Shatter',school:'Ice',cd:10,desc:'Flash-freeze everything near you, then shatter it all.',a:[['ms',{pat:'self',r:230,dur:.5,d:8,st:{freeze:1.4}}],['det',{t:.55,on:'freeze',r:300,ex:100,d:90,stag:.04,up:480}]]},
+ {id:'collapse_art',name:'Gravity Collapse',school:'Dark',cd:9,desc:'Snare every foe in range into one point, then implode.',a:[['imp',{at:170,r:230,delay:.55,ex:160,d:100,up:560}]]},
+ {id:'aegis_art',name:'Aegis Nova',school:'Light',cd:10,desc:'Guard stance: take a hit to unleash a healing holy nova.',a:[['ctr',{dur:1.2,cd:130,cr:230,heal:200,up:560,kb:460,br:60,st:{stun:1}}],['hl',{heal:0,sh2:150,r:60}]]}
+);
+MOBS.push(
+ {id:'parry_step',name:'Parry Step',school:'Sword',cd:1.6,desc:'Short back-step into a 0.5s counter stance.',a:[['mv',{dist:90,off:PI,dur:.14,ifr:.05}],['ctr',{t:.12,dur:.5,cd:70,cr:150,br:30}]]},
+ {id:'grapple_zip',name:'Grapple Zip',school:'Lance',cd:1.8,desc:'Whip-hook the nearest foe in line and zip into it (or just grapple forward).',a:[['wp',{ka:1,len:360,w:24,d:20,mode:'zip'}]]},
+ {id:'powder_roll',name:'Powder Roll',school:'Axe',cd:2,desc:'Roll away leaving a keg that blows after a beat.',a:[['mine',{pat:'self',r:90,d:40,dur:1.2,arm:99}],['mv',{ka:1,dist:170,dur:.2,roll:1}]]},
+ {id:'ring_recall',name:'Ring Recall',school:'Bow',cd:1.4,desc:'Roll while two chakrams orbit and slice anything you pass.',a:[['bl',{pat:'orbit',n:2,sh:'ring',r0:60,w:10,life:1,d:12,pierce:99}],['mv',{ka:1,dist:200,dur:.22,roll:1}]]},
+ {id:'ember_trap',name:'Ember Trap',school:'Fire',cd:1.6,desc:'Roll and leave a proximity fire mine behind.',a:[['mine',{pat:'self',r:100,d:36,dur:8,st:BURN}],['mv',{ka:1,dist:170,dur:.2,roll:1}]]},
+ {id:'coil_hop',name:'Coil Hop',school:'Electric',cd:2,desc:'Hop away and plant a zapping coil where you stood.',a:[['cl',{pat:'self',dur:4,iv:.4,zn:260,d:14}],['mv',{ka:1,dist:140,dur:.3,hop:1}]]},
+ {id:'rift_hop',name:'Rift Hop',school:'Dark',cd:1.8,desc:'Warp a short way; the entry point snares nearby foes and implodes.',a:[['imp',{pat:'self',r:120,delay:.3,ex:60,d:22}],['tp',{ka:1,mode:'aim',dist:190}]]}
+);
+{ const HEFT={berserk:1.4,bastion:1.25,skywyrm:1.3,death_scythe:1.2,dawn_lancer:1.1,hawkeye:1.0,war_fist:1.0,moonveil:.75,blade_dancer:.9,stormwing:.85};
+  for(const m of M) if(HEFT[m.id]) m.heft=HEFT[m.id]; }
+
 return {schools:SCHOOLS, movesets:M, arts:ARTS, mobility:MOBS,
-  combos:['Wind spreads Fire','Electric shatters Freeze ×2','Fire melts Freeze','Light vs Dark ×1.5','Ice freezes stacked Slow','Fire ×4 on Burn = FLASHOVER','Electric ×3 = OVERLOAD arc (any other element discharges early)','Light cleanses Curse ×1.5 + heal','Wind juggles airborne ×1.2','Cursed kills spread Curse']};
+  combos:['Wind spreads Fire','Electric shatters Freeze ×2','Fire melts Freeze','Light vs Dark ×1.5','Ice freezes stacked Slow','Fire ×4 on Burn = FLASHOVER','Electric ×3 = OVERLOAD arc (any other element discharges early)','Light cleanses Curse ×1.5 + heal','Wind juggles airborne ×1.2','Cursed kills spread Curse','WEAPON TRIANGLE: Sword > Axe > Lance > Sword (×1.25 dmg, ×1.5 break)','PARRY: hit during a counter stance = riposte nova','EXECUTE: foes under the threshold die outright','SHATTER/DETONATE: consume Freeze/Burn/Curse for chain blasts','Mines chain-detonate']};
 })();
 
-/* Brown Dust 3 Move Lab 3.2 — engine (Warriors-style combo strings) */
+/* Brown Dust 3 Move Lab 3.3 — engine (Warriors-style combo strings) */
 (() => {
 'use strict';
 
@@ -525,7 +704,7 @@ window.addEventListener('resize', ()=>resize());
 const G = {
   state:'play', low:false, showFps:true, showDmg:true,
   dummyMove:false, fps:0, msg:'', msgT:0, partCap:420, ragMax:24,
-  vibrateUsed:0, audioUsed:0, shakeOn:true, impact:1.25, timeScale:1, slowT:0, flashT:0, flashCol:'#fff',
+  vibrateUsed:0, audioUsed:0, shakeOn:true, impact:1.5, invUntil:0, vigT:0, timeScale:1, slowT:0, flashT:0, flashCol:'#fff',
   kos:0, errors:0, wave:0, cut:null, autoAim:false, breaks:0, rushes:0, dmgTotal:0, wallBounces:0,
   combos:{shatter:0,melt:0,light:0,dark:0,freeze:0,spread:0,flash:0,arc:0,cleanse:0,juggle:0,contagion:0},
   stats:{str:0,br:0,art:0,mob:0,ws:0,awk:0,awkFin:0}
@@ -609,6 +788,7 @@ window.addEventListener('keydown',e=>{
   if(e.code==='KeyL'){ setLow(!G.low); toast(G.low?'LOW graphics ON':'LOW graphics OFF'); }
   if(e.code==='KeyH'){ G.shakeOn=!G.shakeOn; toast(G.shakeOn?'Screen shake ON':'Screen shake OFF'); }
   if(e.code==='KeyP') togglePause();
+  if(e.code==='KeyT'){ const b=document.getElementById('btnRoll'); if(b) b.click(); }
   if(e.code==='Digit1') spawnWave(20);
   if(e.code==='Digit2') spawnWave(30);
   if(e.code==='Digit3') spawnWave(40);
@@ -709,14 +889,40 @@ function togglePause(){ G.state = G.state==='paused'?'play':'paused'; }
 /* ---------- camera ---------- */
 const cam={x:ARENA_W/2,y:ARENA_H/2};
 let shake=0;
-function addShake(v){ shake=Math.min(22, shake+v*(G.impact!=null?G.impact:1)); }
+function addShake(v){ shake=Math.min(28, shake+v*(G.impact!=null?G.impact:1)); }
 let kickX=0,kickY=0,punchZ=0;
-function addKick(a,v){ v*=(G.impact!=null?G.impact:1); kickX=Math.max(-16,Math.min(16,kickX+Math.cos(a)*v)); kickY=Math.max(-16,Math.min(16,kickY+Math.sin(a)*v)); }
-function impactOf(o,dmg){ if(!o.owner||o.kind==='dot') return 0; let p=({str:1,br:2,art:2.4,ws:3,awk:2.2})[o.kind]||1.2; p+=dmg>=200?1:dmg>=100?.5:0; return p*(G.impact!=null?G.impact:1); }
+function addKick(a,v){ v*=(G.impact!=null?G.impact:1); kickX=Math.max(-22,Math.min(22,kickX+Math.cos(a)*v)); kickY=Math.max(-22,Math.min(22,kickY+Math.sin(a)*v)); }
+function impactOf(o,dmg){ if(!o.owner||o.kind==='dot') return 0; let p=({str:1,br:2,art:2.4,ws:3,awk:2.2})[o.kind]||1.2; p+=dmg>=200?1:dmg>=100?.5:0; return p*(o.heft||1)*(G.impact!=null?G.impact:1); }
 
 /* ---------- entities ---------- */
 let player=null, enemies=[], projectiles=[], fields=[], summons=[], parts=[], dmgNums=[], wallsTemp=[];
 let rags=[];
+/* ---------- 3.3 helpers: riposte, mine blast, decals ---------- */
+function riposte(h,from){
+  const q=h.ctrQ, c=h.ctrC; h.ctrT=0; h.iframe=Math.max(h.iframe,0.5);
+  const r=q.cr||130, cc=col(q,c);
+  addPart({flashc:1,x:h.x,y:h.y,r:r*1.2,col:'#fff',t:.14,max:.14});
+  addPart({shock:1,x:h.x,y:h.y,r0:10,r1:r,col:cc,t:.3,max:.3,lw:10});
+  addPart({shock:1,x:h.x,y:h.y,r0:6,r1:r*0.7,col:'#fff',t:.2,max:.2,lw:5});
+  addPart({burst:1,x:h.x,y:h.y,n:G.low?8:18,len:r*1.25,col:cc,t:.24,max:.24,seed:Math.random()*9});
+  addDecal(h.x,h.y,r*0.8,cc); dots(h.x,h.y,16,cc,380,.5);
+  hitList(h,inCirc(h.x,h.y,r),Q(q,{d:q.cd||(q.d||20)*3,up:q.up!=null?q.up:340,kb:q.kb||360,wb:1,br:q.br!=null?q.br:60,hs:0.16,shk:12,st:Object.assign({stun:0.8},q.st||{})}),c,h.x,h.y);
+  hitstop(0.16); addShake(14); G.flashT=0.14; G.flashCol='#ffffff'; G.invUntil=performance.now()+70; G.vigT=0.3; punchZ=Math.max(punchZ,0.09);
+  comboBanner('PARRY! RIPOSTE',h.x,h.y-72,'#ffffff'); h.wg=Math.min(100,h.wg+12);
+  if(q.heal){ h.hp=Math.min(h.maxhp,h.hp+q.heal); addDmgNum(h.x,h.y-40,q.heal,'#6dfe8a',1); }
+  G.combos.parry=(G.combos.parry||0)+1;
+}
+function mineBlast(f){
+  const q=f.q, c=f.c, cc=f.col;
+  explode(f.h,f.x,f.y,f.r,Q(q,{up:q.up!=null?q.up:420,kb:q.kb||240}),c);
+  addPart({shock:1,x:f.x,y:f.y,r0:8,r1:f.r*1.15,col:'#fff',t:.2,max:.2,lw:6});
+  addPart({burst:1,x:f.x,y:f.y,n:G.low?8:14,len:f.r*1.2,col:cc,t:.22,max:.22,seed:Math.random()*9});
+  addDecal(f.x,f.y,f.r*0.8,cc); dust(f.x,f.y,f.r); addShake(7);
+  for(const g of fields) if(g!==f && g.kind==='mine' && g.fuse==null && Math.hypot(g.x-f.x,g.y-f.y)<f.r*1.25) g.fuse=0.07;
+}
+const decals=[];
+function addDecal(x,y,r,colr){ decals.push({x,y,r,col:colr||'#fa8',t:2.6,max:2.6}); if(decals.length>36) decals.shift(); }
+
 
 const FOE_TYPES = [
   {id:'slime',  name:'Slime',   col:'#5ecf7a', ring:'#2a8a48', r:24, hp:200, kind:'monster', spd:62},
@@ -729,6 +935,9 @@ const FOE_TYPES = [
   {id:'dummy',  name:'Dummy',   col:'#c4a882', ring:'#8a6840', r:28, hp:99999, kind:'dummy', spd:0},
 ];
 const FOE = {}; for(const f of FOE_TYPES) FOE[f.id]=f;
+/* weapon triangle (Fire Emblem): Sword > Axe > Lance > Sword */
+const TRI={Sword:'Axe',Axe:'Lance',Lance:'Sword'};
+const WT={skel:'Sword',imp:'Axe',shade:'Sword',knight:'Lance',golem:'Axe'}; for(const f of FOE_TYPES) f.wt=WT[f.id]||null;
 
 /* Fantasy-reskinned faceless humanoid draw (ported feel from Micro Rivals drawHuman, no faces) */
 function drawFoeSprite(u, lod){
@@ -1006,7 +1215,7 @@ function makeHero(name, x, y){
     set:MOVESETS[0], art:ARTS[0], mob:MOBS[0],
     step:0, strT:0, lock:0, buf:null, artCd:0, mobCd:0,
     wg:0, ag:0, awk:0, awkMax:0, hits:0, hitT:0, tw:null, swing:null,
-    portrait:name, buffs:{}, lastAct:'', lastActT:0, spinT:0, regenT:0
+    portrait:name, ctrT:0, buffs:{}, lastAct:'', lastActT:0, spinT:0, regenT:0
   };
 }
 const byId = (list,id)=>list.find(m=>m.id===id);
@@ -1059,7 +1268,7 @@ function lunge(h,a,dist,dur){
 function lungeTo(h,x,y,dur){ const a=Math.atan2(y-h.y,x-h.x); return lunge(h,a,Math.hypot(x-h.x,y-h.y),dur); }
 function addDmgNum(x,y,n,col,big){
   if(!G.showDmg) return;
-  dmgNums.push({x,y,n:Math.round(n),col:col||'#fff',t:0.8,big:big?1:0});
+  dmgNums.push({x,y,n:Math.round(n),col:col||'#fff',t:0.8,big:big?1:0,s:Math.min(2.4,0.85+Math.sqrt(Math.max(1,n))*0.07)});
   if(dmgNums.length>70) dmgNums.splice(0, dmgNums.length-70);
 }
 function addPart(p){ parts.push(p); if(parts.length>G.partCap) parts.splice(0, parts.length-G.partCap); }
@@ -1073,7 +1282,7 @@ function applyStatus(e, st, dur){
 }
 function statusHas(e, st){ return e.status && (e.status[st]||0)>0; }
 let hitstopT=0;
-function hitstop(t){ hitstopT=Math.max(hitstopT, Math.min(0.2,t*(G.impact!=null?G.impact:1))); }
+function hitstop(t){ hitstopT=Math.max(hitstopT, Math.min(0.26,t*(G.impact!=null?G.impact:1))); }
 
 /* ---------- timeline (game-time scheduler; pauses during hitstop) ---------- */
 let gameT=0; const sched=[];
@@ -1098,6 +1307,9 @@ function hurt(e, dmg, a, o){
   if(school==='Light' && statusHas(e,'curse')){ mult*=1.5; applyStatus(e,'curse',0); if(h) h.hp=Math.min(h.maxhp,h.hp+Math.round(h.maxhp*.03)); tag=tag||'CLEANSE!'; tagCol='#ffe08a'; G.combos.cleanse++; }
   if(school==='Wind' && e.z>6){ mult*=1.2; tag=tag||'JUGGLE!'; tagCol='#7dffb0'; G.combos.juggle++; }
   if(school==='Ice' && statusHas(e,'slow') && !statusHas(e,'freeze')){ e._ice=(e._ice||0)+1; if(e._ice>=3){ e._ice=0; applyStatus(e,'freeze',2.2); tag=tag||'FROZEN!'; tagCol='#bfe8ff'; G.combos.freeze++; } }
+  // weapon triangle
+  let tri=0; { const wsch=o.tri||school; if(h && e.wt && TRI[wsch] && o.kind!=='dot' && o.kind!=='wall'){ if(TRI[wsch]===e.wt) tri=1; else if(TRI[e.wt]===wsch) tri=-1; } }
+  if(tri===1) mult*=1.25; else if(tri===-1) mult*=0.85;
   // armored weak-point gauge
   let crit=false;
   const armored = e.brkMax>0;
@@ -1110,7 +1322,7 @@ function hurt(e, dmg, a, o){
       const exposing = (o.br>0) || o.up>0 || (o.knock||0)>=200 || o.kind==='art' || o.kind==='ws' || (h&&h.awk>0) || (e.tele>0);
       if(exposing){
         e.brkShow=4;
-        let bd = (o.br!=null?o.br:4) * (h&&h.awk>0?2:1) * (e.tele>0?1.5:1);
+        let bd = (o.br!=null?o.br:4) * (h&&h.awk>0?2:1) * (e.tele>0?1.5:1) * (tri===1?1.5:1);
         e.brk -= bd;
         if(e.brk<=0) breakFoe(e);
       }
@@ -1137,6 +1349,7 @@ function hurt(e, dmg, a, o){
   if(o.wb){ e.wbT=0.6; e.wbD=Math.max(10,Math.round(dmg*0.4)); e.wbO=h; }
   addDmgNum(e.x + (Math.random()-.5)*14, e.y-8-e.z*0.8, dmg, crit?'#ffd040':(o.col||'#ffe08a'), crit||dmg>=150||IM>=2.5);
   if(tag) comboBanner(tag, e.x, e.y-34-e.z*0.8, tagCol);
+  if(tri && gameT-(e._triT||-9)>1.6){ e._triT=gameT; comboBanner(tri>0?'▲ ADVANTAGE':'▼ RESISTED', e.x+14, e.y-26-e.z*0.8, tri>0?'#7dff9a':'#ff8a8a'); }
   if(o.burn) applyStatus(e,'burn',o.burn);
   if(o.slow) applyStatus(e,'slow',o.slow);
   if(o.stun) applyStatus(e,'stun',o.stun);
@@ -1170,19 +1383,24 @@ function hurt(e, dmg, a, o){
     h.hits++; h.hitT=2.2;
   }
   if(IM>0){ const ec=o.col||'#fff', ey=e.y-e.z*.4;
+    e.sq=0.2; e.sqA=a; e.sqP=Math.min(1.7,0.35+IM*0.28);
+    if(!(armored && !(e.broken>0)) || IM>=3.2) e.stag=Math.max(e.stag||0, 0.09+0.045*Math.min(IM,3.5));
     if(!(e._slT>gameT-0.05)){ e._slT=gameT;
-      addPart({flashc:1,x:e.x,y:ey,r:12+IM*8,col:'#fff',t:.09,max:.09});
-      addPart({slash:1,x:e.x,y:ey,a:a+(Math.random()-.5)*.6,len:26+IM*20,col:ec,t:.16,max:.16});
-      if(IM>=2 && !G.low) addPart({slash:1,x:e.x,y:ey,a:a+(Math.random()<.5?1:-1)*(.7+Math.random()*.5),len:20+IM*14,col:'#fff',t:.13,max:.13});
-      addPart({shock:1,x:e.x,y:ey,r0:4,r1:14+IM*11,col:ec,t:.15,max:.15,lw:2+IM});
-      dots(e.x,ey,Math.round(2+IM*2),ec,110+IM*55,.3); }
-    addShake(0.2*IM); addKick(a,IM*1.6); }
+      addPart({flashc:1,x:e.x,y:ey,r:12+IM*9,col:'#fff',t:.09,max:.09});
+      addPart({slash:1,x:e.x,y:ey,a:a+(Math.random()-.5)*.6,len:30+IM*24,col:ec,t:.17,max:.17});
+      if(IM>=2 && !G.low) addPart({slash:1,x:e.x,y:ey,a:a+(Math.random()<.5?1:-1)*(.7+Math.random()*.5),len:22+IM*16,col:'#fff',t:.14,max:.14});
+      addPart({shock:1,x:e.x,y:ey,r0:4,r1:16+IM*13,col:ec,t:.16,max:.16,lw:2+IM*1.2});
+      if(IM>=1.5) addPart({burst:1,x:e.x,y:ey,a:a,n:G.low?5:8+Math.round(IM*2),len:36+IM*24,col:ec,t:.2,max:.2,seed:Math.random()*9});
+      dots(e.x,ey,Math.round(3+IM*2.5),ec,120+IM*60,.32); }
+    const big = dmg>=170 || IM>=4.4 || crit;
+    if(big && performance.now()>(G._invCool||0)){ G._invCool=performance.now()+420; if(G.impact>=1.5) G.invUntil=performance.now()+55; G.vigT=0.22; punchZ=Math.max(punchZ,0.04+0.01*Math.min(IM,5)); hitstop(0.05); }
+    addShake(0.32*IM); addKick(a,IM*2.7); }
   if(e.hp<=0) killFoe(e, a, (o.killPow||400)*1.3*(e.z>6?1.35:1));
   return dmg;
 }
 function breakFoe(e){
   e.brk=0; e.broken=3.2; e.rushed=0; applyStatus(e,'stun',3.2); e.tele=0;
-  comboBanner('BREAK!', e.x, e.y-46, '#ffd040'); hitstop(0.12); addShake(8); G.breaks++;
+  comboBanner('BREAK!', e.x, e.y-46, '#ffd040'); hitstop(0.16); addShake(11); G.breaks++; G.slowT=Math.max(G.slowT||0,0.16); G.vigT=0.3; punchZ=Math.max(punchZ,0.06); addPart({burst:1,x:e.x,y:e.y,n:16,len:e.r+110,col:'#ffd040',t:.26,max:.26,seed:Math.random()*9}); if(G.impact>=1.5) G.invUntil=performance.now()+60;
   addPart({shock:1,x:e.x,y:e.y,r0:e.r,r1:e.r+70,col:'#ffd040',t:.4,max:.4,lw:6});
   dots(e.x,e.y,14,'#ffd040',260,.6);
 }
@@ -1195,9 +1413,10 @@ function killFoe(e, a, killPow){
     hitstop(.04+kc*.00006); addShake(1.5+kc*.003); addKick(a||0,2+kc*.004);
     if(gameT-(G._koT||-9)>0.4) G._koN=0; G._koN=(G._koN||0)+1; G._koT=gameT;
     if(G._koN===6||G._koN===12||G._koN===20||G._koN===35){ G.slowT=Math.max(G.slowT||0,0.22); G.flashT=0.1; G.flashCol='#fff'; punchZ=0.05; addShake(8); comboBanner(G._koN+' KO SURGE!',e.x,e.y-50,'#ffd040'); } }
+  if(e.brkMax>0){ G.slowT=Math.max(G.slowT||0,0.3); G.flashT=0.12; G.flashCol='#ffe9a0'; G.vigT=0.35; punchZ=Math.max(punchZ,0.08); addShake(12); addPart({burst:1,x:e.x,y:e.y,n:20,len:e.r+130,col:'#ffd070',t:.3,max:.3,seed:Math.random()*9}); comboBanner('FELLED!',e.x,e.y-50,'#ffd070'); if(G.impact>=1.5) G.invUntil=performance.now()+60; }
   if(player && !(player.awk>0)) player.ag=Math.min(100,player.ag+1.2);
   if(e.foeId==='slime'||e.foeId==='wisp'){ dots(e.x,e.y,G.low?5:10,e.col,170,.5); return; }
-  try{ spawnRag(e, a, Math.min(1100,killPow)); }catch(err){ reportErr(err); }
+  try{ spawnRag(e, a, Math.min(1500,killPow*(0.75+0.3*(G.impact||0)))); }catch(err){ reportErr(err); }
   if(e.rag && e.z>6){ for(const p of e.rag.pts){ p.py += 0; } }
   addShake(2);
 }
@@ -1209,7 +1428,7 @@ function D(h,q,c){ return Math.max(1, Math.round((q.d||20) * (h.atk/40) * (c.mul
 function O(h,q,c,extra){
   const el=q.el||c.school;
   const o={school:el, col:col(q,c), owner:h, knock:q.kb!=null?q.kb:(c.kind==='str'?55:110), up:q.up||0,
-    br:q.br!=null?q.br:(c.kind==='str'?3:c.kind==='br'?10:c.kind==='ws'?30:16), wb:q.wb, kind:c.kind, ls:q.ls, spike:q.spike,
+    br:q.br!=null?q.br:(c.kind==='str'?3:c.kind==='br'?10:c.kind==='ws'?30:16), wb:q.wb, kind:c.kind, ls:q.ls, spike:q.spike, heft:(h.set&&h.set.heft)||1, tri:c.school,
     killPow:q.kp||(c.kind==='ws'||c.kind==='awk'?950:c.kind==='br'?620:420)};
   if(q.st) Object.assign(o,q.st);
   if(extra) Object.assign(o,extra);
@@ -1219,9 +1438,9 @@ function hitList(h,list,q,c,ox,oy,extra){
   if(!list.length) return 0;
   const d=D(h,q,c), o=O(h,q,c,extra);
   for(const e of list){ let a=Math.atan2(e.y-oy,e.x-ox); if(q.pull) a+=Math.PI; if(q.dir!=null && q.kdir) a=q.dir; hurt(e,d,a,o); }
-  { const k0=c.kind, n=Math.min(list.length,6);
-    hitstop((q.hs!=null?q.hs:(k0==='str'?0.045:k0==='ws'?0.12:k0==='awk'?0.09:k0==='art'?0.1:0.08))+0.006*n);
-    addShake((q.shk!=null?q.shk:(k0==='str'?0.9:k0==='ws'?6:(k0==='awk'||k0==='art')?4:3))+0.25*n);
+  { const k0=c.kind, n=Math.min(list.length,6), hf=Math.min(1.8,o.heft||1);
+    hitstop(((q.hs!=null?q.hs:(k0==='str'?0.045:k0==='ws'?0.12:k0==='awk'?0.09:k0==='art'?0.1:0.08))+0.006*n+Math.min(0.07,d/3000))*hf);
+    addShake(((q.shk!=null?q.shk:(k0==='str'?0.9:k0==='ws'?6:(k0==='awk'||k0==='art')?4:3))+0.25*n)*hf);
     if(k0!=='str' && n>=3) punchZ=Math.max(punchZ,0.012*Math.min(n,5)); }
   return list.length;
 }
@@ -1245,7 +1464,7 @@ function spawnP(h,a,q,c,i){
   const v=q.v||520, ox=q.from==='side'?(i%2?1:-1)*24:0;
   const sx=h.x+Math.cos(a)*22-Math.sin(a)*ox, sy=h.y+Math.sin(a)*22+Math.cos(a)*ox;
   const p={x:sx,y:sy,bx:sx,by:sy,a,v,r:q.r||10,life:q.life||1.0,t:0,d:D(h,q,c),o:O(h,q,c),sh:q.sh||'orb',col:col(q,c),
-    pierce:q.pierce||0,hit:new Set(),ex:q.ex||0,home:q.home||0,bounce:q.bounce||0,boom:q.boom?1:0,trail:q.trail||0,trT:0,split:q.split||0,owner:h,c,q,acc:q.acc||0};
+    pierce:q.jump?99:(q.pierce||0),jump:q.jump||0,jr:q.jr||320,hit:new Set(),ex:q.ex||0,home:q.home||0,bounce:q.bounce||0,boom:q.boom?1:0,trail:q.trail||0,trT:0,split:q.split||0,owner:h,c,q,acc:q.acc||0};
   if(q.amp) p.wv={amp:q.amp*((i||0)%2?-1:1),f:q.f||9};
   projectiles.push(p);
   if(projectiles.length>220) projectiles.splice(0,projectiles.length-220);
@@ -1255,6 +1474,7 @@ function explode(h,x,y,r,q,c,extra){
   addPart({shock:1,x,y,r0:6,r1:r,col:col(q,c),t:.28,max:.28,lw:5});
   if(!G.low) addPart({flashc:1,x,y,r:r*0.8,col:col(q,c),t:.15,max:.15});
   dots(x,y,8,col(q,c),r*3,.4);
+  if(r>=60){ addDecal(x,y,r*0.8,col(q,c)); if(!G.low) addPart({burst:1,x,y,n:10,len:r*1.15,col:col(q,c),t:.2,max:.2,seed:Math.random()*9}); }
   return hitList(h,inCirc(x,y,r),Q(q,{d:q.exd||q.d,hs:0.03}),c,x,y,extra);
 }
 
@@ -1294,7 +1514,7 @@ const PRIM = {
     later(hop+0.03,()=>{ const p=fwd(h,a,q.at!=null?q.at:40), r=q.r||84;
       addPart({shock:1,x:p.x,y:p.y,r0:10,r1:r,col:col(q,c),t:.3,max:.3,lw:7});
       addPart({crack:1,x:p.x,y:p.y,r:r*0.95,n:q.cr||7,seed:Math.random()*99,t:.7,max:.7});
-      dust(p.x,p.y,r); hitList(h,inCirc(p.x,p.y,r),Q(q,{up:q.up!=null?q.up:180, spike:1}),c,p.x,p.y); addShake(q.shk||6); });
+      dust(p.x,p.y,r); addDecal(p.x,p.y,r*0.85,col(q,c)); punchZ=Math.max(punchZ,0.03); hitList(h,inCirc(p.x,p.y,r),Q(q,{up:q.up!=null?q.up:180, spike:1}),c,p.x,p.y); addShake(q.shk||6); });
   },
   // dash slash through a line
   ds(h,a,q,c){ const aa=a+(q.off||0), dist=q.dist||170, dur=q.dur||0.12; const sx=h.x, sy=h.y;
@@ -1310,7 +1530,7 @@ const PRIM = {
     const end=lungeTo(h,p.x,p.y,dur); addPart({mark:1,x:end.x,y:end.y,r:q.r||90,col:col(q,c),t:dur,max:dur});
     swing(h,a-2,a+0.2,70,dur,c,'over');
     later(dur,()=>{ const r=q.r||90; addPart({shock:1,x:h.x,y:h.y,r0:12,r1:r,col:col(q,c),t:.32,max:.32,lw:8}); addPart({crack:1,x:h.x,y:h.y,r,n:8,seed:Math.random()*99,t:.7,max:.7});
-      dust(h.x,h.y,r); hitList(h,inCirc(h.x,h.y,r),Q(q,{up:q.up!=null?q.up:300, spike:1}),c,h.x,h.y); addShake(q.shk||8); });
+      dust(h.x,h.y,r); addDecal(h.x,h.y,r*0.85,col(q,c)); punchZ=Math.max(punchZ,0.04); hitList(h,inCirc(h.x,h.y,r),Q(q,{up:q.up!=null?q.up:300, spike:1}),c,h.x,h.y); addShake(q.shk||8); });
   },
   // projectiles (fan / ring / weave / homing / boomerang / bounce / explosive / split)
   pj(h,a,q,c){ const n=q.n||1;
@@ -1482,6 +1702,62 @@ const PRIM = {
       if(!G.low) addPart({crack:1,x:cen.x,y:cen.y,r:r1,n:9,seed:Math.random()*99,t:.5,max:.5});
       hitList(h,inRing(cen.x,cen.y,r0,r1),Q(q,{up:q.up!=null?q.up:220,hs:0.02}),c,cen.x,cen.y); addShake(2); });
   },
+  // ===== 3.3 roguelike primitives =====
+  // counter stance: any hit taken while it is up is negated and answered with a riposte nova
+  ctr(h,a,q,c){ const dur=q.dur||0.7; h.ctrT=dur; h.ctrQ=q; h.ctrC=c;
+    addPart({shock:1,x:h.x,y:h.y,r0:h.r+46,r1:h.r+8,col:col(q,c),t:.25,max:.25,lw:5});
+    swing(h,a-0.3,a+0.3,40,Math.min(dur,0.3),c,'cast'); comboBanner('STANCE',h.x,h.y-70,col(q,c)); },
+  // execute: foes under thr% HP (and not armored-unbroken) die outright; the rest take a normal hit
+  exe(h,a,q,c){ const thr=q.thr||0.3, R=q.r||110, arc=q.arc||1.8;
+    const L=q.circ?inCirc(h.x,h.y,R):inCone(h.x,h.y,a,R,arc);
+    if(q.ln) lunge(h,a,q.ln,0.08);
+    swing(h,a-1.2,a+1.2,R,0.14,c,'arc');
+    addPart({cres:1,fol:h,a0:a-(q.circ?3.1:arc/2),a1:a+(q.circ?3.1:arc/2),r:R,w:q.w||26,col:'#ff3050',t:.26,max:.26});
+    const doomed=L.filter(e=>e.foeId!=='dummy' && e.hp<=e.maxhp*thr && (!(e.brkMax>0)||e.broken>0));
+    hitList(h,L.filter(e=>!doomed.includes(e)),q,c,h.x,h.y);
+    for(const e of doomed){ const ang=Math.atan2(e.y-h.y,e.x-h.x);
+      addPart({slash:1,x:e.x,y:e.y,a:ang+0.8,len:70,col:'#ff3050',t:.25,max:.25}); addPart({slash:1,x:e.x,y:e.y,a:ang-0.8,len:70,col:'#fff',t:.25,max:.25});
+      hurt(e,e.hp+Math.round(e.maxhp*0.25),ang,O(h,q,c,{killPow:1300,knock:260,up:260}));
+      comboBanner('EXECUTED!',e.x,e.y-34,'#ff3050'); h.hp=Math.min(h.maxhp,h.hp+Math.round(h.maxhp*(q.heal||0.02))); G.combos.exec=(G.combos.exec||0)+1; }
+    if(doomed.length){ hitstop(0.1+0.02*Math.min(doomed.length,5)); addShake(8); G.invUntil=performance.now()+55; } },
+  // whip lash: reach line. mode 'pull' hooks foes in, 'zip' drags YOU to the first foe (or just forward)
+  wp(h,a0,q,c){ const a=a0+(q.off||0), len=q.len||260, w=q.w||16, mode=q.mode||'crack';
+    swing(h,a,a,len*0.4,0.14,c,'poke');
+    later(0.03,()=>{ if(!h.alive) return;
+      const sx=h.x, sy=h.y, ex=sx+Math.cos(a)*len, ey=sy+Math.sin(a)*len;
+      addPart({streak:1,x0:sx,y0:sy,x1:ex,y1:ey,w:q.vw||9,col:col(q,c),t:.22,max:.22});
+      addPart({shock:1,x:ex,y:ey,r0:4,r1:30,col:'#fff',t:.16,max:.16,lw:4}); addPart({star:1,x:ex,y:ey,r:22,col:col(q,c),t:.14,max:.14});
+      const L=inLine(sx,sy,a,len,w+14);
+      if(mode==='pull'){ for(const e of L){ if(e.brkMax>0&&!(e.broken>0)) continue; const d=Math.hypot(e.x-sx,e.y-sy)||1, pw=Math.min(950,d*5.5); e.kx=-(e.x-sx)/d*pw; e.ky=-(e.y-sy)/d*pw; } }
+      if(mode==='zip'){ let t=null,bd=1e9; for(const e of L){ const d=Math.hypot(e.x-sx,e.y-sy); if(d<bd){bd=d;t=e;} }
+        const dd=t?Math.max(0,bd-t.r-18):len*0.55; const end=lunge(h,a,dd,0.11); h.iframe=Math.max(h.iframe,0.2); ghostTrail(h,sx,sy,end.x,end.y,col(q,c)); }
+      hitList(h,L,Q(q,mode==='pull'?{pull:1,kb:0}:{kb:q.kb!=null?q.kb:90}),c,sx,sy); }); },
+  // powder kegs / traps: arm, trigger on proximity (or timeout), chain-detonate. {det:1} detonates every live mine.
+  mine(h,a,q,c){ if(q.det){ let i=0; for(const f of fields) if(f.kind==='mine'&&f.h===h&&f.fuse==null) f.fuse=(i++)*0.05; swing(h,a-0.8,a+0.8,50,0.14,c,'cast'); return; }
+    const P=placePts(h,a,q);
+    P.forEach((p,i)=>later((q.stag||0)*i,()=>{ addField({kind:'mine',x:p.x,y:p.y,r:q.r||80,trig:q.trig||48,arm:q.arm!=null?q.arm:0.35,dur:q.dur||8,tk:99,h,c,q,col:col(q,c),end:mineBlast}); dots(p.x,p.y,5,col(q,c),90,.25); }));
+    swing(h,a-0.5,a+0.5,40,0.14,c,'cast'); },
+  // gravity snare: yank unarmored foes onto a point, then implode there
+  imp(h,a,q,c){ const P=placePts(h,a,Q(q,{at:q.at!=null?q.at:150})), R=q.r||150, dl=q.delay||0.5;
+    for(const p of P){ addPart({mark:1,x:p.x,y:p.y,r:R,col:col(q,c),t:dl,max:dl});
+      for(const e of inCirc(p.x,p.y,R)){ if(e.brkMax>0&&!(e.broken>0)) continue; const d=Math.hypot(e.x-p.x,e.y-p.y)||1, pw=Math.min(1100,d*7); e.kx+=-(e.x-p.x)/d*pw; e.ky+=-(e.y-p.y)/d*pw; applyStatus(e,'stun',0.2); }
+      later(dl,()=>{ explode(h,p.x,p.y,q.ex||Math.round(R*0.7),Q(q,{up:q.up!=null?q.up:360,kb:q.kb||140}),c); addShake(7); addDecal(p.x,p.y,R*0.6,col(q,c)); }); }
+    swing(h,a-1,a+1,40,0.16,c,'cast'); },
+  // detonate everything afflicted with a status (freeze / burn / curse / shock) in range
+  det(h,a,q,c){ const on=q.on||'freeze', R=q.r||240; const L=inCirc(h.x,h.y,R).filter(e=>statusHas(e,on));
+    const label={freeze:'SHATTER!',burn:'FLASH DETONATION!',curse:'SOUL POP!',shock:'DISCHARGE!',slow:'CRYSTALLIZE!'}[on]||'DETONATE!';
+    if(L.length){ comboBanner(label,h.x,h.y-84,col(q,c)); G.combos.det=(G.combos.det||0)+1; G.slowT=Math.max(G.slowT||0,0.12); }
+    L.forEach((e,i)=>{ const x=e.x, y=e.y; applyStatus(e,on,0);
+      later((q.stag!=null?q.stag:0.04)*i,()=>{ addPart({burst:1,x,y,n:12,len:(q.ex||70)*1.2,col:col(q,c),t:.22,max:.22,seed:Math.random()*9}); explode(h,x,y,q.ex||70,Q(q,{up:q.up!=null?q.up:300,kb:q.kb||140}),c); }); });
+    swing(h,a-1,a+1,60,0.16,c,'cast'); },
+  // aura that follows the hero and ticks
+  au(h,a,q,c){ addField({kind:'pool',fol:h,x:h.x,y:h.y,r:q.r||100,dur:q.dur||6,tk:q.tk||0.35,h,c,q,d:D(h,q,c),o:O(h,q,c,{knock:q.kb!=null?q.kb:30,kind:'str'}),col:col(q,c)});
+    addPart({shock:1,x:h.x,y:h.y,r0:h.r,r1:(q.r||100),col:col(q,c),t:.35,max:.35,lw:6}); comboBanner(q.n2||'AURA',h.x,h.y-96,col(q,c)); },
+  // storm coils: stationary conductors that chain-zap nearby foes and arc to neighbouring coils
+  cl(h,a,q,c){ const P=placePts(h,a,q);
+    P.forEach((p,i)=>later((q.stag||0)*i,()=>{ addField({kind:'coil',x:p.x,y:p.y,r:18,dur:q.dur||6,tk:q.iv||0.5,h,c,q,col:col(q,c),zn:q.zn||300,lk:q.links||3,
+        d:D(h,q,c),o:O(h,q,c,{knock:25,kind:'str'})}); addPart({bolt:1,x:p.x,y:p.y,h:280,col:col(q,c),t:.2,max:.2,seed:Math.random()*99,w:5}); dots(p.x,p.y,6,col(q,c),120,.3); }));
+    swing(h,a-0.4,a+0.4,40,0.14,c,'cast'); },
 };
 function inCircle2(x,y,r){ return inCirc(x,y,r); }
 
@@ -1540,7 +1816,7 @@ function castArt(h){
 function useMob(h){
   const M=h.mob; if(h.mobCd>0) return;
   // dodge-cancel: clears recovery and buffered input, keeps the string step
-  h.lock=0; h.buf=null; h.tw=null;
+  h.lock=0; h.buf=null; h.tw=null; h.ctrT=0;
   h._ka = (Math.hypot(h.mvx||0,h.mvy||0)>0.2) ? Math.atan2(h.mvy,h.mvx) : aimAngle(h);
   runActs(h, M.a, ctxFor(h,'mob',M.school));
   h.mobCd=M.cd||0.7; h.lastAct='MOVE · '+M.name; h.lastActT=1;
@@ -1582,7 +1858,7 @@ function endAwaken(h){
 function makeFoe(id,x,y){
   const t=FOE[id];
   return {foeId:id,name:t.name,col:t.col,ring:t.ring,r:t.r,hp:t.hp,maxhp:t.hp,kind:t.kind,spd:t.spd,x,y,a:0,alive:true,
-    kx:0,ky:0,z:0,vz:0,status:{},flash:0,brkMax:t.brk||0,brk:t.brk||0,brkShow:0,broken:0,rushed:0,cd:Math.random()*0.6,atkCd:1.5+Math.random()*2,tele:0,wbT:0};
+    kx:0,ky:0,z:0,vz:0,status:{},flash:0,brkMax:t.brk||0,brk:t.brk||0,brkShow:0,broken:0,rushed:0,cd:Math.random()*0.6,atkCd:1.5+Math.random()*2,tele:0,wbT:0,wt:t.wt||null,stag:0,sq:0};
 }
 function freeSpot(cx,cy,r0,r1){
   for(let k=0;k<30;k++){ const a=Math.random()*TAU, d=r0+Math.random()*(r1-r0); const p=clampPt(cx+Math.cos(a)*d, cy+Math.sin(a)*d); if(walkOk(p.x,p.y,30)) return p; }
@@ -1605,7 +1881,7 @@ function spawnArmored(){
 function spawnDummies(){
   for(let i=0;i<6;i++){ const a=i/6*TAU; const p=clampPt(player.x+Math.cos(a)*150, player.y+Math.sin(a)*150); enemies.push(makeFoe('dummy',p.x,p.y)); }
 }
-function clearAll(){ enemies=[]; projectiles=[]; fields=[]; parts=[]; dmgNums=[]; wallsTemp.length=0; rags=[]; sched.length=0; }
+function clearAll(){ decals.length=0; enemies=[]; projectiles=[]; fields=[]; parts=[]; dmgNums=[]; wallsTemp.length=0; rags=[]; sched.length=0; }
 function resetLab(){
   clearAll();
   const keep = player ? {set:player.set, art:player.art, mob:player.mob, portrait:player.portrait} : null;
@@ -1621,7 +1897,7 @@ function update(dt){
   if(G.slowT>0){ G.slowT-=dt; dt*=0.25; }
   gameT+=dt; runSched();
   // hero timers
-  h.lock-=dt; h.artCd=Math.max(0,h.artCd-dt); h.mobCd=Math.max(0,h.mobCd-dt); h.iframe=Math.max(0,h.iframe-dt);
+  h.lock-=dt; h.ctrT=Math.max(0,(h.ctrT||0)-dt); h.artCd=Math.max(0,h.artCd-dt); h.mobCd=Math.max(0,h.mobCd-dt); h.iframe=Math.max(0,h.iframe-dt);
   h.flash=Math.max(0,h.flash-dt); h.hopT=Math.max(0,h.hopT-dt); h.rollT=Math.max(0,(h.rollT||0)-dt); h.lastActT-=dt;
   if(h.buffs.dmgT>0) h.buffs.dmgT-=dt; if(h.buffs.spdT>0) h.buffs.spdT-=dt;
   if(h.hitT>0){ h.hitT-=dt; if(h.hitT<=0) h.hits=0; }
@@ -1656,8 +1932,9 @@ function update(dt){
   for(let i=parts.length-1;i>=0;i--){ const p=parts[i]; p.t-=dt; if(p.vx){ p.x+=p.vx*dt; p.y+=p.vy*dt; p.vx*=0.92; p.vy*=0.92; } if(p.t<=0) parts.splice(i,1); }
   for(let i=dmgNums.length-1;i>=0;i--){ const d=dmgNums[i]; d.t-=dt; d.y-=(d.banner?22:40)*dt; if(d.t<=0) dmgNums.splice(i,1); }
   updateRags(dt);
+  for(let i=decals.length-1;i>=0;i--){ decals[i].t-=dt; if(decals[i].t<=0) decals.splice(i,1); } if(G.vigT>0) G.vigT-=dt;
   cam.x+=(h.x-cam.x)*Math.min(1,dt*8); cam.y+=(h.y-cam.y)*Math.min(1,dt*8);
-  shake=Math.max(0,shake-dt*40); kickX*=Math.max(0,1-dt*12); kickY*=Math.max(0,1-dt*12); punchZ=Math.max(0,punchZ-dt*0.2); if(G.flashT>0) G.flashT-=dt; if(G.msgT>0) G.msgT-=dt;
+  shake=Math.max(0,shake-dt*40); kickX*=Math.max(0,1-dt*12); kickY*=Math.max(0,1-dt*12); punchZ=Math.max(0,punchZ-dt*0.45); if(G.flashT>0) G.flashT-=dt; if(G.msgT>0) G.msgT-=dt;
 }
 
 function updateEnemies(dt){
@@ -1665,7 +1942,7 @@ function updateEnemies(dt){
   for(let i=0;i<enemies.length;i++){
     const e=enemies[i];
     if(!e.alive){ dead++; continue; }
-    e.flash=Math.max(0,e.flash-dt);
+    e.flash=Math.max(0,e.flash-dt); if(e.sq>0) e.sq-=dt; if(e.stag>0) e.stag-=dt;
     for(const k in e.status){ if(e.status[k]>0) e.status[k]-=dt; }
     if(e.brkShow>0) e.brkShow-=dt;
     if(e.broken>0){ e.broken-=dt; if(e.broken<=0){ e.brk=e.brkMax; e.rushed=0; } }
@@ -1687,7 +1964,7 @@ function updateEnemies(dt){
       if(th.t<=0 || Math.abs(e.kx)+Math.abs(e.ky)<120){ e.thrown=null; explode(th.h,e.x,e.y,80,Q(th.q,{d:th.q.d,up:300}),th.c); hurt(e,th.self,0,Object.assign({},th.o,{up:200})); addShake(6); if(!e.alive) continue; }
     }
     if(e.foeId==='dummy'){ if(G.dummyMove){ e.x+=Math.cos(gameT*1.5+i)*60*dt; } continue; }
-    const busy = statusHas(e,'stun')||statusHas(e,'freeze')||e.z>4||e.broken>0;
+    const busy = statusHas(e,'stun')||statusHas(e,'freeze')||e.z>4||e.broken>0||e.stag>0;
     const dx=h.x-e.x, dy=h.y-e.y, d=Math.hypot(dx,dy)||1;
     if(e.tele>0){ e.tele-=dt; if(busy){ e.tele=0; }
       else if(e.tele<=0){ // armored heavy swing
@@ -1712,11 +1989,12 @@ function updateEnemies(dt){
 }
 function wallBounce(e){
   e.wbT=0; hurt(e, e.wbD||12, Math.atan2(-e.ky,-e.kx), {owner:e.wbO,knock:0,col:'#ffd27a',kind:'wall',br:6});
-  comboBanner('WALL BOUNCE!', e.x, e.y-30, '#ffd27a'); addPart({star:1,x:e.x,y:e.y,r:30,col:'#ffd27a',t:.2,max:.2}); addShake(3); G.wallBounces++;
+  comboBanner('WALL BOUNCE!', e.x, e.y-30, '#ffd27a'); addPart({star:1,x:e.x,y:e.y,r:34,col:'#ffd27a',t:.22,max:.22}); addPart({shock:1,x:e.x,y:e.y,r0:6,r1:70,col:'#ffd27a',t:.25,max:.25,lw:7}); addPart({burst:1,x:e.x,y:e.y,n:12,len:90,col:'#ffd27a',t:.22,max:.22,seed:Math.random()*9}); addDecal(e.x,e.y,34,'#ffd27a'); hitstop(0.07); addShake(8); punchZ=Math.max(punchZ,0.035); G.wallBounces++;
   if(e.alive){ e.vz=Math.max(e.vz,260); if(e.z<=0) e.z=1; }
 }
 function hurtHero(h,dmg,a){
   if(h.iframe>0 || G.cut) return;
+  if(h.ctrT>0 && h.ctrQ){ riposte(h,a); return; }
   dmg=Math.round(dmg*(h.awk>0?0.6:1));
   if(h.shield>0){ const abs=Math.min(h.shield,dmg); h.shield-=abs; dmg-=abs; }
   if(dmg<=0) return;
@@ -1747,6 +2025,7 @@ function updateProjectiles(dt){
       for(const e of enemies){ if(!e.alive||p.hit.has(e)) continue;
         const rr=p.r+e.r*0.7; const dx=e.x-p.x, dy=e.y-p.y; if(dx*dx+dy*dy>rr*rr) continue;
         p.hit.add(e); hurt(e,p.d,p.sh==='wave'?p.a:Math.atan2(dy,dx),p.o);
+        if(p.jump>0){ const tg=nearest(p.x,p.y,p.jr,p.hit); if(tg){ p.jump--; p.a=Math.atan2(tg.y-p.y,tg.x-p.x); p.bx=p.x; p.by=p.y; p.t=Math.min(p.t,p.life*0.55); addPart({shock:1,x:p.x,y:p.y,r0:4,r1:28,col:p.col,t:.15,max:.15,lw:3}); } else p.jump=0; }
         if(p.sh!=='wave' && p.hit.size<=1) hitstop(0.02);
         if(p.split && !p.splitDone){ p.splitDone=1; for(let k=0;k<p.split;k++){ const q=spawnP(p.owner,p.a+(k-(p.split-1)/2)*0.7+Math.PI*0,Q(p.q,{split:0,d:Math.round((p.q.d||20)*0.6),life:0.45,v:420}),p.c,k); q.bx=q.x=p.x; q.by=q.y=p.y; q.hit.add(e); } }
         if(p.ex){ explode(p.owner,p.x,p.y,p.ex,p.q,p.c); if(!p.pierce){ dead=true; break; } }
@@ -1765,6 +2044,7 @@ function updateFields(dt){
     if(f.vx){ const nx=f.x+f.vx*dt, ny=f.y+f.vy*dt; if(!solidAt(nx,ny)){ f.x=nx; f.y=ny; } else { f.vx=-f.vx; f.vy=-f.vy; } }
     if(f.kind==='vortex'){ for(const e of inCirc(f.x,f.y,f.r*1.5)){ if(e.brkMax>0&&!(e.broken>0)) continue; const dx=f.x-e.x, dy=f.y-e.y, d=Math.hypot(dx,dy)||1; if(d>12){ e.x+=dx/d*f.pull*dt; e.y+=dy/d*f.pull*dt; } } }
     if(f.kind==='beam' && f.track){ f.a=aimAngle(f.h); } else if(f.kind==='beam'){ f.a=f.a0+f.rot*(f.t/f.dur); }
+    if(f.kind==='mine'){ if(f.fuse!=null){ f.fuse-=dt; if(f.fuse<=0) f.t=f.dur; } else if(f.t>f.arm && inCirc(f.x,f.y,f.trig).length) f.fuse=0.06; }
     f.tkT-=dt;
     if(f.tkT<=0 && f.tk<50){ f.tkT=f.tk;
       if(f.kind==='pillar'||f.kind==='pool'||f.kind==='vortex'){
@@ -1776,6 +2056,13 @@ function updateFields(dt){
       } else if(f.kind==='turret'){
         const e=nearest(f.x,f.y,340);
         if(e){ const a=Math.atan2(e.y-f.y,e.x-f.x); const q=f.q; const p=spawnP(f.h,a,Q(q,{sh:q.sh||'shard',v:q.v||620,life:0.7,d:q.d||14}),f.c,0); p.x=p.bx=f.x; p.y=p.by=f.y; }
+      } else if(f.kind==='coil'){
+        const L=nearestN(f.x,f.y,f.zn,f.lk);
+        if(L.length){ const pts=[{x:f.x,y:f.y-36}]; for(const e of L) pts.push({x:e.x,y:e.y}); addPart({chain:1,pts,col:f.col,t:.22,max:.22}); for(const e of L) hurt(e,f.d,Math.atan2(e.y-f.y,e.x-f.x),f.o); }
+        const myI=fields.indexOf(f);
+        for(let j=myI+1;j<fields.length;j++){ const g=fields[j]; if(g.kind!=='coil'||g.h!==f.h) continue; const dd=Math.hypot(g.x-f.x,g.y-f.y); if(dd>f.zn*0.9||dd<4) continue;
+          addPart({streak:1,x0:f.x,y0:f.y-36,x1:g.x,y1:g.y-36,w:7,col:f.col,t:.2,max:.2});
+          const aa=Math.atan2(g.y-f.y,g.x-f.x); for(const e of inLine(f.x,f.y,aa,dd,30)) hurt(e,Math.round(f.d*1.4),aa,f.o); }
       } else if(f.kind==='tether'){
         for(const e of f.targets){ if(e.alive && Math.hypot(e.x-f.x,e.y-f.y)<360) hurt(e,f.d,Math.atan2(f.y-e.y,f.x-e.x),f.o); }
       }
@@ -1804,6 +2091,9 @@ function render(){
   // temp walls
   for(const w of wallsTemp){ ctx.globalAlpha=Math.min(1,w.t*2); ctx.fillStyle=w.col||'#9ad'; ctx.fillRect(w.x-w.hw,w.y-w.hw,w.hw*2,w.hw*2); ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillRect(w.x-w.hw,w.y-w.hw,w.hw*2,5); }
   ctx.globalAlpha=1;
+  // scorch / crater decals
+  for(const d of decals){ if(!vis(d.x,d.y,d.r+20)) continue; const k=Math.min(1,d.t/d.max*1.6); ctx.globalAlpha=0.5*k; ctx.fillStyle='#0c0a08'; ctx.beginPath(); ctx.ellipse(d.x,d.y,d.r,d.r*0.8,0,0,TAU); ctx.fill(); ctx.globalAlpha=0.35*k; ctx.strokeStyle=d.col; ctx.lineWidth=3; ctx.stroke(); }
+  ctx.globalAlpha=1;
   // ground fields
   for(const f of fields){ if(!vis(f.x,f.y,f.r+60)) continue; drawFieldGround(f); }
   // corpses
@@ -1813,7 +2103,10 @@ function render(){
     if(e.z>2){ ctx.fillStyle='rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(e.x,e.y+4,e.r*0.8,e.r*0.4,0,0,TAU); ctx.fill(); }
     const lift=e.z*0.8;
     if(lift) { ctx.save(); ctx.translate(0,-lift); }
+    if(e.sq>0){ const k=e.sq/0.2, P=e.sqP||0.5; ctx.save(); ctx.translate(e.x+(Math.random()-.5)*5*P*k,e.y+(Math.random()-.5)*5*P*k); ctx.rotate(e.sqA||0); ctx.scale(1+0.32*P*k,1-0.22*P*k); ctx.rotate(-(e.sqA||0)); ctx.translate(-e.x,-e.y); }
     if(e.foeId==='slime'||e.foeId==='wisp') drawBlob(e); else drawFoeSprite(e, G.low);
+    if(e.sq>0) ctx.restore();
+    if(e.wt) drawTri(e);
     if(statusHas(e,'freeze')){ ctx.fillStyle='rgba(170,225,255,.45)'; ctx.beginPath(); ctx.arc(e.x,e.y,e.r+3,0,TAU); ctx.fill(); }
     else if(statusHas(e,'burn') && !G.low){ ctx.fillStyle='rgba(255,120,40,.35)'; ctx.beginPath(); ctx.arc(e.x,e.y-e.r*0.4,e.r*0.6,0,TAU); ctx.fill(); }
     if(statusHas(e,'shock') && !G.low){ ctx.strokeStyle='rgba(192,240,255,.85)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(e.x,e.y,e.r+5+Math.sin(gameT*30)*2,0,TAU); ctx.stroke(); }
@@ -1826,6 +2119,8 @@ function render(){
   for(const p of projectiles) if(vis(p.x,p.y,60)) drawProj(p);
   // hero
   drawHero(player);
+  if(player.ctrT>0){ ctx.save(); ctx.globalAlpha=0.55+0.25*Math.sin(gameT*20); ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.setLineDash([10,6]); ctx.lineDashOffset=-gameT*60; ctx.beginPath(); ctx.arc(player.x,player.y,player.r+16,0,TAU); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=(player.ctrC&&player.ctrC.col)||'#fff'; ctx.globalAlpha=0.9; for(let k=0;k<4;k++){ const an=k*Math.PI/2+gameT*2; ctx.beginPath(); ctx.arc(player.x+Math.cos(an)*(player.r+16),player.y+Math.sin(an)*(player.r+16),4,0,TAU); ctx.fill(); } ctx.restore(); }
   // tall fields (pillars, orbs, beams, vortex columns, turrets)
   for(const f of fields){ if(f.kind==='beam'||vis(f.x,f.y,f.r+140)) drawFieldTall(f); }
   // particles
@@ -1833,11 +2128,13 @@ function render(){
   ctx.globalAlpha=1; noGlow();
   // damage numbers
   ctx.textAlign='center';
-  for(const d of dmgNums){ ctx.globalAlpha=Math.min(1,d.t*2.2); ctx.font=(d.banner?'bold 15px':d.big?'bold 17px':'bold 12px')+' monospace';
+  for(const d of dmgNums){ ctx.globalAlpha=Math.min(1,d.t*2.2); ctx.font='bold '+Math.round(d.banner?15:(d.big?17:12)*(d.s||1)*(d.banner?1:1+0.7*Math.max(0,1-(0.8-d.t)/0.12)))+'px monospace';
     ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.75)'; ctx.strokeText(d.n,d.x,d.y); ctx.fillStyle=d.col; ctx.fillText(d.n,d.x,d.y); }
   ctx.globalAlpha=1;
   ctx.restore();
   if(G.flashT>0){ ctx.globalAlpha=Math.min(0.6,G.flashT*3.5); ctx.fillStyle=G.flashCol; ctx.fillRect(0,0,W,H); ctx.globalAlpha=1; }
+  if(G.vigT>0 && G.impact>0){ const k=Math.min(1,G.vigT/0.25); const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.35,W/2,H/2,Math.max(W,H)*0.78); g.addColorStop(0,'rgba(255,235,180,0)'); g.addColorStop(1,'rgba(255,235,180,'+(0.5*k)+')'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+  if(G.impact>=1.5 && performance.now()<G.invUntil){ ctx.globalCompositeOperation='difference'; ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation='source-over'; }
   drawHUD();
   if(TCH.show) drawTouchUI();
 }
@@ -1859,6 +2156,10 @@ function drawBreakGauge(e){
     ctx.beginPath(); ctx.moveTo(cx,y-5); ctx.lineTo(cx+5,y); ctx.lineTo(cx,y+5); ctx.lineTo(cx-5,y); ctx.closePath(); ctx.fill(); }
   if(e.broken>0){ ctx.font='bold 11px monospace'; ctx.textAlign='center'; ctx.fillStyle='#ffd040'; ctx.fillText('BROKEN',e.x,y-9); }
 }
+function drawTri(e){ const hs=player&&player.set?player.set.school:null; if(!TRI[hs]) return;
+  const adv=TRI[hs]===e.wt, dis=TRI[e.wt]===hs, cl=adv?'#6dff8a':dis?'#ff7a7a':'#aab'; const x=e.x+e.r*0.85, y=e.y-e.r*0.95;
+  ctx.globalAlpha=0.95; ctx.fillStyle='rgba(8,10,16,.8)'; ctx.beginPath(); ctx.arc(x,y,8,0,TAU); ctx.fill(); ctx.strokeStyle=cl; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle=cl; ctx.font='bold 10px monospace'; ctx.textAlign='center'; ctx.fillText(e.wt[0],x,y+3.5); ctx.globalAlpha=1; }
 function drawFieldGround(f){
   const a=Math.min(1,f.t/0.12)*Math.min(1,(f.dur-f.t)/0.2+0.1);
   if(f.kind==='pool'){ ctx.globalAlpha=0.3*a; ctx.fillStyle=f.col; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,TAU); ctx.fill();
@@ -1867,6 +2168,10 @@ function drawFieldGround(f){
     ctx.globalAlpha=0.75*a; ctx.strokeStyle=f.col; ctx.lineWidth=3; for(let k=0;k<3;k++){ ctx.beginPath(); const b=f.t*9+k*2.09; for(let s=0;s<=10;s++){ const rr=f.r*(s/10), an=b+s*0.45; const x=f.x+Math.cos(an)*rr, y=f.y+Math.sin(an)*rr*0.8; s?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.stroke(); } }
   else if(f.kind==='orb'){ const k=f.t/f.dur; ctx.globalAlpha=0.5; ctx.strokeStyle=f.col; ctx.setLineDash([6,5]); ctx.lineWidth=2; ctx.beginPath(); ctx.arc(f.x,f.y,f.r,0,TAU); ctx.stroke(); ctx.setLineDash([]);
     ctx.globalAlpha=0.25; ctx.fillStyle=f.col; ctx.beginPath(); ctx.arc(f.x,f.y,f.r*k,0,TAU); ctx.fill(); }
+  else if(f.kind==='mine'){ const armed=f.t>f.arm, fz=f.fuse!=null; ctx.globalAlpha=0.95; ctx.fillStyle='#1c1a22'; ctx.beginPath(); ctx.arc(f.x,f.y,11,0,TAU); ctx.fill(); ctx.strokeStyle=f.col; ctx.lineWidth=2; ctx.stroke();
+    const blink=fz||(((f.t*(f.dur-f.t<1.2?12:armed?5:2))|0)%2); ctx.fillStyle=blink?'#ff5040':'#702020'; ctx.beginPath(); ctx.arc(f.x,f.y,4,0,TAU); ctx.fill();
+    if(armed&&f.arm<50){ ctx.globalAlpha=0.22; ctx.strokeStyle=f.col; ctx.setLineDash([4,5]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(f.x,f.y,f.trig,0,TAU); ctx.stroke(); ctx.setLineDash([]); } }
+  else if(f.kind==='coil'){ ctx.globalAlpha=0.14*a; ctx.strokeStyle=f.col; ctx.setLineDash([6,8]); ctx.lineWidth=2; ctx.beginPath(); ctx.arc(f.x,f.y,f.zn,0,TAU); ctx.stroke(); ctx.setLineDash([]); }
   else if(f.kind==='pillar'){ ctx.globalAlpha=0.45*a; ctx.fillStyle=f.col; ctx.beginPath(); ctx.ellipse(f.x,f.y,f.r,f.r*0.55,0,0,TAU); ctx.fill(); }
   ctx.globalAlpha=1;
 }
@@ -1886,6 +2191,8 @@ function drawFieldTall(f){
     if(f.look==='angel'){ ctx.beginPath(); ctx.arc(f.x,f.y-20+bob,11,0,TAU); ctx.fill(); ctx.fillStyle='rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(f.x-14,f.y-22+bob,12,5,-0.4,0,TAU); ctx.ellipse(f.x+14,f.y-22+bob,12,5,0.4,0,TAU); ctx.fill(); ctx.strokeStyle='#ffe08a'; ctx.lineWidth=2; ctx.beginPath(); ctx.ellipse(f.x,f.y-36+bob,8,3,0,0,TAU); ctx.stroke(); }
     else if(f.look==='bat'){ ctx.beginPath(); ctx.moveTo(f.x,f.y-16+bob); ctx.lineTo(f.x-16,f.y-24+bob); ctx.lineTo(f.x-6,f.y-12+bob); ctx.lineTo(f.x,f.y-6+bob); ctx.lineTo(f.x+6,f.y-12+bob); ctx.lineTo(f.x+16,f.y-24+bob); ctx.closePath(); ctx.fill(); }
     else { ctx.beginPath(); ctx.moveTo(f.x,f.y-34+bob); ctx.lineTo(f.x+10,f.y-14+bob); ctx.lineTo(f.x,f.y+bob); ctx.lineTo(f.x-10,f.y-14+bob); ctx.closePath(); ctx.fill(); ctx.fillStyle='rgba(255,255,255,.6)'; ctx.fillRect(f.x-2,f.y-28+bob,4,16); } }
+  else if(f.kind==='coil'){ const pulse=0.5+0.5*Math.sin(f.t*14); ctx.globalAlpha=a; ctx.fillStyle='#3a4258'; ctx.fillRect(f.x-5,f.y-34,10,34); ctx.fillStyle='#8a95b0'; ctx.fillRect(f.x-9,f.y-6,18,6);
+    glow(14,f.col); ctx.fillStyle=f.col; ctx.beginPath(); ctx.arc(f.x,f.y-38,7+pulse*3,0,TAU); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(f.x,f.y-38,3,0,TAU); ctx.fill(); noGlow(); }
   else if(f.kind==='tether'){ ctx.globalAlpha=0.8*a; ctx.strokeStyle=f.col; ctx.lineWidth=3; for(const e of f.targets){ if(!e.alive) continue; ctx.beginPath(); ctx.moveTo(f.x,f.y); const mx=(f.x+e.x)/2+Math.sin(f.t*12)*12, my=(f.y+e.y)/2-20; ctx.quadraticCurveTo(mx,my,e.x,e.y-e.z*0.8); ctx.stroke(); } }
   ctx.globalAlpha=1;
 }
@@ -1905,6 +2212,9 @@ function drawProj(p){
     case 'bat': { const f=Math.sin(p.t*30)*5; ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(-6,-10-f); ctx.lineTo(-2,0); ctx.lineTo(-6,10+f); ctx.closePath(); ctx.fill(); break; }
     case 'feather': ctx.fillStyle='#f4f8ff'; ctx.beginPath(); ctx.ellipse(0,0,12,4,0,0,TAU); ctx.fill(); ctx.strokeStyle=p.col; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(12,0); ctx.stroke(); break;
     case 'moon': ctx.beginPath(); ctx.arc(0,0,s,0,TAU); ctx.fill(); ctx.fillStyle='#0c0612'; ctx.beginPath(); ctx.arc(-s*0.35,0,s*0.8,0,TAU); ctx.fill(); break;
+    case 'ring': ctx.rotate(p.t*22); ctx.lineWidth=4; ctx.strokeStyle='#e8eef8'; ctx.beginPath(); ctx.arc(0,0,s+4,0,TAU); ctx.stroke(); ctx.strokeStyle=p.col; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(0,0,s,0,TAU); ctx.stroke();
+      for(let k=0;k<4;k++){ const an=k*Math.PI/2; ctx.beginPath(); ctx.moveTo(Math.cos(an)*(s+4),Math.sin(an)*(s+4)); ctx.lineTo(Math.cos(an)*(s+11),Math.sin(an)*(s+11)); ctx.stroke(); } break;
+    case 'bomb': ctx.rotate(-p.a); ctx.fillStyle='#22222a'; ctx.beginPath(); ctx.arc(0,0,s+3,0,TAU); ctx.fill(); ctx.strokeStyle=p.col; ctx.lineWidth=2; ctx.stroke(); ctx.fillStyle='#ffe070'; ctx.fillRect(-1,-s-8+Math.sin(p.t*40)*2,2,4); break;
     case 'wave': { const w=p.ww||90, k=Math.max(0,1-p.t/p.life); ctx.globalAlpha=0.35+0.5*k; ctx.beginPath(); ctx.arc(-w*0.35,0,w*0.6,-0.9,0.9); ctx.arc(-w*0.5,0,w*0.5,0.8,-0.8,true); ctx.closePath(); ctx.fill(); ctx.globalAlpha=0.8*k; ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(-w*0.35,0,w*0.6,-0.8,0.8); ctx.stroke(); break; }
     default: glow(10,p.col); ctx.beginPath(); ctx.arc(0,0,s,0,TAU); ctx.fill(); noGlow(); ctx.fillStyle='rgba(255,255,255,.8)'; ctx.beginPath(); ctx.arc(0,0,s*0.45,0,TAU); ctx.fill();
   }
@@ -1919,6 +2229,11 @@ function drawPart(p){
     ctx.beginPath(); ctx.arc(x,y,r,a0,a1); ctx.arc(x,y,Math.max(4,r-w),a1,a0,true); ctx.closePath(); ctx.fill();
     ctx.fillStyle='rgba(255,255,255,'+(0.8*k)+')'; ctx.beginPath(); ctx.arc(x,y,r,a0,a1); ctx.arc(x,y,r-3,a1,a0,true); ctx.closePath(); ctx.fill();
     if(p.vert) ctx.restore(); }
+  else if(p.burst){ const n=p.n||10, R0=p.len*(0.12+0.45*(1-k)), R1=p.len*(0.3+0.7*(1-k)); ctx.lineCap='round';
+    for(let i=0;i<n;i++){ const an=(p.a!=null? p.a+(i/(n-1)-.5)*2.4 : i/n*TAU)+Math.sin(i*12.9898+(p.seed||0))*0.18, rl=0.65+0.35*Math.abs(Math.sin(i*78.233+(p.seed||0)));
+      const x0=p.x+Math.cos(an)*R0, y0=p.y+Math.sin(an)*R0, x1=p.x+Math.cos(an)*(R0+(R1-R0)*rl), y1=p.y+Math.sin(an)*(R0+(R1-R0)*rl);
+      ctx.strokeStyle=p.col; ctx.lineWidth=(i%2?2.5:4.5)*k+0.5; ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=(i%2?1:1.8)*k; ctx.stroke(); } ctx.lineCap='butt'; }
   else if(p.slash){ const L=p.len*(0.4+0.6*(1-k)), dx=Math.cos(p.a), dy=Math.sin(p.a); ctx.lineCap='round'; ctx.globalAlpha=Math.min(1,k*1.5);
     ctx.strokeStyle=p.col; ctx.lineWidth=5*k+1; ctx.beginPath(); ctx.moveTo(p.x-dx*L*.25,p.y-dy*L*.25); ctx.lineTo(p.x+dx*L,p.y+dy*L); ctx.stroke();
     ctx.strokeStyle='#fff'; ctx.lineWidth=2*k+.5; ctx.stroke(); ctx.globalAlpha=1; }
@@ -1959,6 +2274,11 @@ function drawWeapon(h,ang,len,kind,school){
   else if(w==='fist'){ ctx.fillStyle=c; ctx.beginPath(); ctx.arc(base+Math.min(L*0.4,30),0,10,0,TAU); ctx.fill(); ctx.fillStyle='#fff'; ctx.fillRect(base+Math.min(L*0.4,30)+4,-6,4,12); }
   else if(w==='bow'){ ctx.strokeStyle='#8a6a40'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(base,0,22,-1.2,1.2); ctx.stroke(); ctx.strokeStyle='#eee'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(base+Math.cos(-1.2)*22,Math.sin(-1.2)*22); ctx.lineTo(base-4,0); ctx.lineTo(base+Math.cos(1.2)*22,Math.sin(1.2)*22); ctx.stroke(); }
   else if(w==='scythe'){ ctx.fillStyle='#4a3a50'; ctx.fillRect(base-16,-2,L+10,4); ctx.fillStyle='#d8d0e8'; ctx.beginPath(); ctx.arc(base+L-6,-18,22,0.3,1.9); ctx.arc(base+L-12,-22,18,1.8,0.4,true); ctx.fill(); }
+  else if(w==='katana'){ ctx.fillStyle='#f0f4ff'; ctx.beginPath(); ctx.moveTo(base,-2.5); ctx.quadraticCurveTo(base+L*0.6,-7,base+L*1.05,-1); ctx.lineTo(base+L*0.6,1.5); ctx.lineTo(base,2.5); ctx.fill(); ctx.fillStyle=c; ctx.fillRect(base-2,-6,4,12); ctx.fillStyle='#3a2a40'; ctx.fillRect(base-14,-2,13,4); }
+  else if(w==='greatsword'){ ctx.fillStyle='#dfe6f2'; ctx.beginPath(); ctx.moveTo(base,-8); ctx.lineTo(base+L*1.05,-5); ctx.lineTo(base+L*1.2,0); ctx.lineTo(base+L*1.05,5); ctx.lineTo(base,8); ctx.fill(); ctx.fillStyle='#9aa6bc'; ctx.fillRect(base,-1.5,L,3); ctx.fillStyle=c; ctx.fillRect(base-4,-12,6,24); ctx.fillStyle='#3a2a30'; ctx.fillRect(base-18,-2.5,15,5); }
+  else if(w==='whip'){ ctx.strokeStyle='#6a4a30'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(base,0); ctx.bezierCurveTo(base+L*0.3,-18,base+L*0.6,18,base+L,0); ctx.stroke(); ctx.fillStyle='#3a2a20'; ctx.fillRect(base-10,-3,14,6); ctx.fillStyle=c; ctx.beginPath(); ctx.arc(base+L,0,3,0,TAU); ctx.fill(); }
+  else if(w==='hammer'){ ctx.fillStyle='#7a5a30'; ctx.fillRect(base-6,-3,L*0.8,6); ctx.fillStyle='#cfd6e2'; ctx.fillRect(base+L*0.7,-14,22,28); ctx.fillStyle=c; ctx.fillRect(base+L*0.7+8,-14,5,28); }
+  else if(w==='chakram'){ ctx.strokeStyle='#e8eef8'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(base+16,0,12,0,TAU); ctx.stroke(); ctx.strokeStyle=c; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(base+16,0,8,0,TAU); ctx.stroke(); }
   else { // tome / staff: glowing focus orb
     ctx.fillStyle=SCHOOLS[school].color; glow(12,SCHOOLS[school].color); ctx.beginPath(); ctx.arc(base+16,0,8,0,TAU); ctx.fill(); noGlow(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(base+16,0,3.5,0,TAU); ctx.fill();
     if(w==='staff'){ ctx.fillStyle='#8a6a40'; ctx.fillRect(base-22,-2,36,4); } }
@@ -2009,12 +2329,13 @@ function drawHUD(){
   const h=player, S=SCHOOLS[h.set.school], small=W<1100;
   ctx.textAlign='left'; ctx.font='bold 12px monospace';
   // top-left status
-  ctx.fillStyle='rgba(8,10,16,.72)'; rr(8,8,small?250:290,58,8); ctx.fill();
-  ctx.fillStyle='#ffe08a'; ctx.fillText('BROWN DUST 3 — MOVE LAB 3.2',16,24);
+  ctx.fillStyle='rgba(8,10,16,.72)'; rr(8,8,small?250:290,TRI[h.set.school]?76:58,8); ctx.fill();
+  ctx.fillStyle='#ffe08a'; ctx.fillText('BROWN DUST 3 — MOVE LAB 3.3',16,24);
   ctx.fillStyle='#cfd8e8'; ctx.font='11px monospace';
   const live=enemies.filter(e=>e.alive).length;
   ctx.fillText(h.portrait+'  HP '+Math.round(h.hp)+'/'+h.maxhp+'  foes '+live+'  KO '+G.kos,16,40);
   ctx.fillText((G.showFps?'fps '+Math.round(G.fps)+'  ':'')+(G.low?'LOW ':'')+'rag '+rags.filter(r=>!r.frozen).length+'  shake '+(G.shakeOn?'on':'off')+' (H)',16,56);
+  if(TRI[h.set.school]){ ctx.fillStyle='#8fe8a8'; ctx.font='10px monospace'; ctx.fillText('TRIANGLE  Sword▶Axe▶Lance▶Sword  (green badge = advantage)',16,70); }
   // moveset + string pips (top centre)
   const cx=W/2, sw=Math.min(520,W-360), sx=cx-sw/2;
   ctx.fillStyle='rgba(8,10,16,.75)'; rr(sx,8,sw,64,10); ctx.fill();
@@ -2049,7 +2370,7 @@ function drawHUD(){
   ctx.fillStyle='#fff'; ctx.fillText(h.awk>0?'AWAKENED '+h.awk.toFixed(1)+'s (E ends + finisher)':(h.ag>=50?'AWAKENING READY — E / AWAKE':'AWAKENING '+Math.floor(h.ag)+'%'), gx+6, gy+25);
   if(!TCH.show){ ctx.font='10px monospace'; ctx.fillStyle='rgba(220,230,245,.8)';
     ctx.fillText('ART '+h.art.name+(h.artCd>0?' '+h.artCd.toFixed(1)+'s':' READY')+' (R)   MOVE '+h.mob.name+' (Shift)', gx, gy-6);
-    ctx.textAlign='right'; ctx.fillText('LMB/J main · RMB/F melee · R art · Q warrior special · E awaken · Shift dodge · 1/2/3 waves 20/30/40 · 4 armored · Tab loadout', W-10, H-8); }
+    ctx.textAlign='right'; ctx.fillText('LMB/J main · RMB/F melee · R art · Q warrior special · E awaken · Shift dodge · 1/2/3 waves 20/30/40 · 4 armored · Tab loadout · T roll random build', W-10, H-8); }
   // toast
   if(G.msgT>0){ ctx.textAlign='center'; ctx.globalAlpha=Math.min(1,G.msgT*2); ctx.fillStyle='rgba(0,0,0,.65)'; rr(cx-170,84,340,26,8); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 12px monospace'; ctx.fillText(G.msg,cx,101); ctx.globalAlpha=1; }
   // cut-in
@@ -2131,7 +2452,7 @@ function buildLoadoutUI(){
       if(tab==='set'){
         const sl=m.string.map((s,i)=>'<span class="st">S'+(i+1)+'</span> '+esc(s.n)).join(' · ');
         const bl=m.branch.map((b,i)=>'<span class="br">C'+(i+1)+'</span> '+esc(b.n)).join(' · ');
-        div.innerHTML=`<b style="color:${S.ring}">${esc(m.name)}</b> <span class="tag" style="border-color:${S.color}">${m.school}</span> <span class="tag">${m.string.length}-hit · ${m.wpn}</span><br><small>${esc(m.fantasy)}</small><div class="ln">${sl}</div><div class="ln">${bl}</div><div class="ln"><span class="ws">W.SP</span> ${esc(m.ws.n)}</div><small class="ins">Inspired by: ${esc(m.inspo)}</small>`;
+        div.innerHTML=`<b style="color:${S.ring}">${esc(m.name)}</b> <span class="tag" style="border-color:${S.color}">${m.school}</span> <span class="tag">${m.string.length}-hit · ${m.wpn}</span>${TRI[m.school]?' <span class="tag" style="color:#8fe8a8">beats '+TRI[m.school]+'</span>':''}${m.heft>=1.3?' <span class="tag" style="color:#ffb070">HEAVY</span>':''}<br><small>${esc(m.fantasy)}</small><div class="ln">${sl}</div><div class="ln">${bl}</div><div class="ln"><span class="ws">W.SP</span> ${esc(m.ws.n)}</div><small class="ins">Inspired by: ${esc(m.inspo)}</small>`;
       } else {
         div.innerHTML=`<b style="color:${S.ring}">${esc(m.name)}</b> <span class="tag" style="border-color:${S.color}">${m.school}</span> <span class="tag">CD ${m.cd}s</span><br><small>${esc(m.desc)}</small>${m.inspo?'<br><small class="ins">Inspired by: '+esc(m.inspo)+'</small>':''}`;
       }
@@ -2159,7 +2480,8 @@ function buildLoadoutUI(){
   on('btnArmored',()=>spawnArmored()); on('btnDummy',()=>spawnDummies()); on('btnReset',()=>resetLab());
   on('btnMove',()=>{ G.dummyMove=!G.dummyMove; toast('Dummy move '+(G.dummyMove?'ON':'OFF')); });
   on('btnLow',()=>{ setLow(!G.low); toast(G.low?'LOW ON':'LOW OFF'); });
-  on('btnImpact',()=>{ const L=[1.25,2,0.6,0]; G.impact=L[(L.indexOf(G.impact)+1)%L.length]; toast('Impact '+({0:'OFF',0.6:'LOW',1.25:'NORMAL',2:'MAX'})[G.impact]); });
+  on('btnImpact',()=>{ const L=[1.5,2.4,0.7,0]; G.impact=L[(L.indexOf(G.impact)+1)%L.length]; toast('Impact '+({0:'OFF',0.7:'LOW',1.5:'NORMAL',2.4:'MAX'})[G.impact]+(G.impact>=1.5?'  (impact-flash frames on)':'  (no impact-flash frames)')); });
+  on('btnRoll',()=>{ const pk=a=>a[(Math.random()*a.length)|0]; const s1=pk(MOVESETS),a1=pk(ARTS),m1=pk(MOBS); equip(s1.id,a1.id,m1.id); refresh(); toast('BUILD: '+s1.name+' · '+a1.name+' · '+m1.name); });
   on('btnToggle',()=>setLoadoutOpen(!loadoutOpen)); on('btnCloseLoadout',()=>setLoadoutOpen(false));
   window.addEventListener('keydown',e=>{ if(e.code==='Escape') setLoadoutOpen(false); });
   setLoadoutOpen(false); refresh();
@@ -2179,7 +2501,7 @@ function boot(){
   player=makeHero(PORTRAIT_NAMES[0]||'Emma', ARENA_W/2, ARENA_H/2);
   resize(); setLow(G.low); buildLoadoutUI();
   spawnWave(20);
-  toast('Move Lab 3.2 — '+MOVESETS.length+' movesets · MAIN string → MELEE branch');
+  toast('Move Lab 3.3 — '+MOVESETS.length+' movesets · weapon triangle: Sword > Axe > Lance > Sword');
   window.BD3 = {
     G, get player(){return player;}, get enemies(){return enemies;}, get rags(){return rags;}, get parts(){return parts;},
     MOVESETS, ARTS, MOBS, SCHOOLS, press, equip,
