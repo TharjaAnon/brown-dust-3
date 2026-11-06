@@ -1428,7 +1428,7 @@ function D(h,q,c){ return Math.max(1, Math.round((q.d||20) * (h.atk/40) * (c.mul
 function O(h,q,c,extra){
   const el=q.el||c.school;
   const o={school:el, col:col(q,c), owner:h, knock:q.kb!=null?q.kb:(c.kind==='str'?55:110), up:q.up||0,
-    br:q.br!=null?q.br:(c.kind==='str'?3:c.kind==='br'?10:c.kind==='ws'?30:16), wb:q.wb, kind:c.kind, ls:q.ls, spike:q.spike, heft:(h.set&&h.set.heft)||1, tri:c.school,
+    br:q.br!=null?q.br:(c.kind==='str'?3:c.kind==='br'?10:c.kind==='ws'?30:16), wb:q.wb, kind:c.kind, ls:q.ls, spike:q.spike, heft:c.heft||(h.set&&h.set.heft)||1, tri:c.school,
     killPow:q.kp||(c.kind==='ws'||c.kind==='awk'?950:c.kind==='br'?620:420)};
   if(q.st) Object.assign(o,q.st);
   if(extra) Object.assign(o,extra);
@@ -1790,7 +1790,7 @@ function press(slot){
 function doMain(h){
   const S=h.set.string; if(h.step>=S.length) h.step=0;
   const st=S[h.step];
-  runActs(h, st.a, ctxFor(h,'str',h.set.school,{step:h.step}));
+  h.wpnNow=st.wp||null; runActs(h, st.a, ctxFor(h,'str',st.sch||h.set.school,{step:h.step,heft:st.heft}));
   h.step++; h.lock=(st.lk||0.26)*speedMul(h); h.strT=0.85;
   h.lastAct='S'+h.step+' · '+st.n; h.lastActT=1.2;
   G.stats.str++;
@@ -1799,10 +1799,10 @@ function doMain(h){
 function doBranch(h){
   const B=h.set.branch; const idx=Math.min(h.step, B.length-1);
   const b=B[idx];
-  runActs(h, b.a, ctxFor(h,'br',h.set.school,{step:idx}));
+  h.wpnNow=b.wp||null; runActs(h, b.a, ctxFor(h,'br',b.sch||h.set.school,{step:idx,heft:b.heft}));
   h.lock=(b.lk||0.55)*speedMul(h); h.step=0; h.strT=0;
   h.lastAct='C'+(idx+1)+' · '+b.n; h.lastActT=1.6;
-  comboBanner('C'+(idx+1)+' '+b.n.toUpperCase(), h.x, h.y-62, SCHOOLS[h.set.school].ring);
+  comboBanner('C'+(idx+1)+' '+b.n.toUpperCase(), h.x, h.y-62, SCHOOLS[b.sch||h.set.school].ring);
   G.stats.br++;
 }
 function castArt(h){
@@ -1826,9 +1826,9 @@ function warriorSpecial(h, force){
   if(G.cut) return;
   if(h.wg<100 && !force){ toast('Warrior gauge '+Math.floor(h.wg)+'%'); return; }
   h.wg=0; const ws=h.set.ws;
-  startCut(h, ws.n, 'WARRIOR SPECIAL', SCHOOLS[h.set.school]);
+  startCut(h, ws.n, 'WARRIOR SPECIAL', SCHOOLS[ws.sch||h.set.school]);
   h.iframe=2.4; h.lock=1.2; h.step=0;
-  later(0.05,()=>runActs(h, ws.a, ctxFor(h,'ws',h.set.school)));
+  later(0.05,()=>runActs(h, ws.a, ctxFor(h,'ws',ws.sch||h.set.school)));
   h.lastAct='WS · '+ws.n; h.lastActT=2.5; G.stats.ws++;
 }
 function startCut(h,title,sub,s){
@@ -2264,7 +2264,7 @@ function drawPart(p){
   ctx.globalAlpha=1;
 }
 function drawWeapon(h,ang,len,kind,school){
-  const w=h.set.wpn || WPN[school] || 'sword', c=SCHOOLS[school].ring, base=h.r-4;
+  const w=h.wpnNow || h.set.wpn || WPN[school] || 'sword', c=SCHOOLS[school].ring, base=h.r-4;
   ctx.save(); ctx.translate(h.x,h.y); ctx.rotate(ang);
   if(kind==='shield'){ ctx.fillStyle='#c9a84a'; ctx.fillRect(base+2,-18,10,36); ctx.fillStyle='#6a7a98'; ctx.fillRect(base+4,-14,6,28); ctx.restore(); return; }
   const L=Math.max(26,Math.min(len*0.85,110));
@@ -2441,8 +2441,52 @@ function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','
 function buildLoadoutUI(){
   let filter='ALL', tab='set';
   const list=document.getElementById('moveList');
+  /* ---- COMBO BUILDER: mix any weapon / element hit into your own string ---- */
+  const CB={str:[null,null,null,null,null],br:[null,null,null,null,null],ws:null,kind:'str',slot:0};
+  const entry=(set,e,kind)=>({n:e.n,lk:e.lk,a:e.a,sch:set.school,wp:set.wpn,heft:set.heft||1,src:set.name,kind});
+  const find=(sid)=>MOVESETS.find(m=>m.id===sid);
+  try{ const sv=JSON.parse(localStorage.getItem('bd3_combo')||'null'); if(sv){ for(const k of ['str','br']) sv[k].forEach((r,i)=>{ if(r){ const m=find(r[0]); const arr=k==='str'?m&&m.string:m&&m.branch; if(arr&&arr[r[1]]) CB[k][i]=entry(m,arr[r[1]],k); } }); if(sv.ws){ const m=find(sv.ws); if(m) CB.ws={n:m.ws.n,a:m.ws.a,sch:m.school,src:m.name,sid:m.id}; } } }catch(err){}
+  if(!CB.str.some(Boolean)){ const d=[['blade_dancer',0],['dawn_lancer',1],['thoron',0],['magma_pillar',0],['hawkeye',2]]; d.forEach((r,i)=>{ const m=find(r[0]); if(m) CB.str[i]=entry(m,m.string[r[1]],'str'); });
+    const db=[['blade_dancer',0],['dawn_lancer',2],['thoron',1],['magma_pillar',3],['hawkeye',1]]; db.forEach((r,i)=>{ const m=find(r[0]); if(m) CB.br[i]=entry(m,m.branch[r[1]],'br'); });
+    const m=find('runeblade'); if(m) CB.ws={n:m.ws.n,a:m.ws.a,sch:m.school,src:m.name,sid:m.id}; }
+  const saveCB=()=>{ try{ const ref=(e)=>{ if(!e) return null; for(const m of MOVESETS){ const arr=e.kind==='str'?m.string:m.branch; const i=arr.findIndex(x=>x.a===e.a); if(i>=0) return [m.id,i]; } return null; };
+    localStorage.setItem('bd3_combo',JSON.stringify({str:CB.str.map(ref),br:CB.br.map(ref),ws:CB.ws&&CB.ws.sid})); }catch(err){} };
+  function applyCB(){
+    const S=CB.str.filter(Boolean), B=CB.br.filter(Boolean); if(!S.length){ toast('Fill at least one STRING slot'); return; }
+    const first=S[0], ws=CB.ws||{n:'—',a:[],sch:first.sch};
+    const cs={id:'custom',name:'Custom Combo',school:first.sch,wpn:first.wp,heft:first.heft,fantasy:'Your own mix.',inspo:'',
+      string:S.map(e=>({n:e.n,lk:e.lk,a:e.a,sch:e.sch,wp:e.wp,heft:e.heft})), branch:(B.length?B:S).map(e=>({n:e.n,lk:e.lk,a:e.a,sch:e.sch,wp:e.wp,heft:e.heft})),
+      ws:{n:ws.n,a:ws.a,sch:ws.sch}};
+    player.set=cs; player.step=0; player.strT=0; player.wpnNow=null; saveCB();
+    toast('CUSTOM: '+S.map(e=>e.sch).join(' → '));
+  }
+  function renderCombo(){
+    list.innerHTML='';
+    const hd=document.createElement('div'); hd.className='mv'; hd.style.cursor='default';
+    const slotBtn=(kind,i)=>{ const e=CB[kind][i], on=CB.kind===kind&&CB.slot===i, col=e?SCHOOLS[e.sch].color:'#556';
+      return `<button data-k="${kind}" data-i="${i}" class="chip${on?' on':''}" style="border-color:${col};margin:2px;text-align:left;min-width:62px">${kind==='str'?'S':'C'}${i+1}<br><span style="color:${col};font-weight:normal">${e?esc(e.n):'(empty)'}</span><br><span style="opacity:.6;font-weight:normal">${e?e.sch+' · '+esc(e.wp):''}</span></button>`; };
+    hd.innerHTML='<b style="color:#ffe08a">YOUR COMBO</b><div class="ln">Pick a slot, then tap a hit below. Each hit keeps its own weapon, element, and damage style. Press LMB/J for the string; RMB/F fires the C-slot matching how far in you are.</div>'
+      +'<div class="ln"><b>STRING</b> '+[0,1,2,3,4].map(i=>slotBtn('str',i)).join('')+'</div><div class="ln"><b>BRANCH</b> '+[0,1,2,3,4].map(i=>slotBtn('br',i)).join('')+'</div>'
+      +`<div class="ln"><button data-k="ws" class="chip${CB.kind==='ws'?' on':''}" style="margin:2px">W.SP: ${CB.ws?esc(CB.ws.n)+' ('+esc(CB.ws.src)+')':'(none)'}</button> <button id="cbApply" class="chip on" style="margin:2px;background:#2a6a3a">EQUIP COMBO</button> <button id="cbClear" class="chip" style="margin:2px">CLEAR ${CB.kind==='ws'?'':'SLOT'}</button> <button id="cbRand" class="chip" style="margin:2px">RANDOMIZE</button></div>`;
+    list.appendChild(hd);
+    hd.querySelectorAll('button[data-k]').forEach(b=>b.onclick=()=>{ CB.kind=b.dataset.k; CB.slot=+b.dataset.i||0; renderCombo(); });
+    hd.querySelector('#cbApply').onclick=applyCB;
+    hd.querySelector('#cbClear').onclick=()=>{ if(CB.kind==='ws') CB.ws=null; else CB[CB.kind][CB.slot]=null; renderCombo(); };
+    hd.querySelector('#cbRand').onclick=()=>{ const pk=a=>a[(Math.random()*a.length)|0]; for(const k of ['str','br']) for(let i=0;i<5;i++){ const m=pk(MOVESETS); const arr=k==='str'?m.string:m.branch; CB[k][i]=entry(m,pk(arr),k); } const m=pk(MOVESETS); CB.ws={n:m.ws.n,a:m.ws.a,sch:m.school,src:m.name,sid:m.id}; applyCB(); renderCombo(); };
+    for(const m of MOVESETS){ if(filter!=='ALL'&&m.school!==filter) continue; const S=SCHOOLS[m.school];
+      const items=CB.kind==='ws'?[{n:m.ws.n,ws:1}]:(CB.kind==='str'?m.string:m.branch);
+      const div=document.createElement('div'); div.className='mv';
+      div.innerHTML=`<b style="color:${S.ring}">${esc(m.name)}</b> <span class="tag" style="border-color:${S.color}">${m.school} · ${m.wpn}</span><div class="ln">${items.map((e,i)=>`<button class="chip" data-j="${i}" style="margin:2px;border-color:${S.color}">${esc(e.n)}</button>`).join('')}</div>`;
+      div.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const j=+b.dataset.j;
+        if(CB.kind==='ws'){ CB.ws={n:m.ws.n,a:m.ws.a,sch:m.school,src:m.name,sid:m.id}; }
+        else{ const e=(CB.kind==='str'?m.string:m.branch)[j]; CB[CB.kind][CB.slot]=entry(m,e,CB.kind); CB.slot=Math.min(4,CB.slot+1); }
+        applyCB(); renderCombo(); });
+      list.appendChild(div); }
+    document.getElementById('countLabel').textContent='combo builder · '+MOVESETS.length+' sets to mix';
+  }
   function refresh(){
     list.innerHTML='';
+    if(tab==='combo'){ renderCombo(); return; }
     const src = tab==='set'?MOVESETS : tab==='art'?ARTS : MOBS;
     const items = src.filter(m=>filter==='ALL'||m.school===filter);
     for(const m of items){
@@ -2463,7 +2507,7 @@ function buildLoadoutUI(){
   }
   refreshLoadout=refresh;
   const st=document.getElementById('slotTabs');
-  for(const [k,l] of [['set','MOVESET'],['art','COMBAT ART'],['mob','MOBILITY']]){
+  for(const [k,l] of [['set','MOVESET'],['combo','COMBO BUILDER'],['art','COMBAT ART'],['mob','MOBILITY']]){
     const b=document.createElement('button'); b.textContent=l; b.className='chip'+(k==='set'?' on':'');
     b.onclick=()=>{ tab=k; [...st.children].forEach(c=>c.classList.remove('on')); b.classList.add('on'); refresh(); }; st.appendChild(b); }
   const sf=document.getElementById('schoolFilters');
@@ -2488,7 +2532,7 @@ function buildLoadoutUI(){
 }
 function equip(setId,artId,mobId){
   const h=player;
-  if(setId){ const m=byId(MOVESETS,setId); if(!m) return false; h.set=m; h.step=0; h.strT=0; }
+  if(setId){ const m=byId(MOVESETS,setId); if(!m) return false; h.set=m; h.step=0; h.strT=0; h.wpnNow=null; }
   if(artId){ const a=byId(ARTS,artId); if(!a) return false; h.art=a; h.artCd=0; }
   if(mobId){ const b=byId(MOBS,mobId); if(!b) return false; h.mob=b; h.mobCd=0; }
   return true;
