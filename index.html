@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Brown Dust 3 — Move Lab 3.3</title>
+<title>Brown Dust 3 — Move Lab 3.5</title>
 <style>
 html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:monospace;color:#eee}
 #c{display:block;width:100vw;height:100vh;touch-action:none;cursor:crosshair}
@@ -43,6 +43,13 @@ html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:mo
 .mv .ins{color:#b8a0e0;font-style:italic}
 #loadout{width:min(440px,94vw)}
 </style>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#1a1a22"/>
+<meta name="apple-mobile-web-app-title" content="Brown Dust 3"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="./apple-touch-icon.png"/>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -2584,6 +2591,11 @@ boot();
 requestAnimationFrame(frame);
 })();
 
+</script>
+<script>
+if (location.protocol === 'http:' || location.protocol === 'https:') {
+  navigator.serviceWorker.register('./sw.js');
+}
 </script>
 </body>
 </html>
