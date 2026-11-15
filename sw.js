@@ -1,7 +1,7 @@
-const CACHE = 'bd3-move-lab-3.7';
+const CACHE = 'bd3-move-lab-3.8';
 const PRECACHE = [
   './index.html',
-  './Brown_Dust_3_Move_Lab_3.7.html',
+  './Brown_Dust_3_Move_Lab_3.8.html',
   './manifest.webmanifest',
   './apple-touch-icon.png',
   './icon-192.png',

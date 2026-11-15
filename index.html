@@ -145,6 +145,7 @@ html,body{margin:0;height:100%;background:#1a1a22;overflow:hidden;font-family:mo
     <button id="btnLow" type="button">LOW GFX</button>
     <button id="btnImpact" type="button">IMPACT</button>
     <button id="btnRoll" type="button">ROLL BUILD</button>
+    <button id="btnZoom" type="button">ZOOM AUTO</button>
     <button id="btnShake" type="button">SHAKE 100%</button>
     <button id="btnFlash" type="button">FLASH ON</button>
     <button id="btnTitle" type="button">◀ TITLE</button>
@@ -779,7 +780,7 @@ function resize(){
   DPR = Math.min(G.low?1:2, window.devicePixelRatio||1);
   cv.width = (W*DPR)|0; cv.height = (H*DPR)|0;
   ctx.setTransform(DPR,0,0,DPR,0,0);
-  ZOOM = (IS_TOUCH || TCH.on || TCH.show) ? 1.55 : 1.7;
+  ZOOM = G.zoomSel || ((IS_TOUCH || TCH.on || TCH.show) ? 1.0 : 1.7);
 }
 window.addEventListener('resize', ()=>resize());
 
@@ -1340,8 +1341,7 @@ const TAU=Math.PI*2;
 function angDiff(a,b){ let d=(a-b)%TAU; if(d>Math.PI)d-=TAU; if(d<-Math.PI)d+=TAU; return d; }
 function aimAngle(h){
   if(TCH.on){
-    if(TCH.aim){ const v=stickVec(TCH.aim); if(v && v.m>0.15) return Math.atan2(v.dy,v.dx); }
-    const e=nearest(h.x,h.y,320); if(e) return Math.atan2(e.y-h.y,e.x-h.x);
+    if(TCH.move){ const v=stickVec(TCH.move); if(v && v.m>0.12) return Math.atan2(v.dy,v.dx); }
     return h.a;
   }
   if(G.autoAim){ const e=nearest(h.x,h.y,360); if(e) return Math.atan2(e.y-h.y,e.x-h.x); }
@@ -1642,7 +1642,6 @@ const PRIM = {
   },
   // leap / dive onto a point or nearest foe
   dv(h,a,q,c){ let p=fwd(h,a,q.at||160);
-    if(q.tgt){ const e=nearest(h.x,h.y,(q.at||160)*1.7); if(e) p={x:e.x,y:e.y}; }
     const dur=q.dur||0.34; h.hopT=dur; h.hopMax=dur; h.iframe=Math.max(h.iframe,dur+0.1);
     const end=lungeTo(h,p.x,p.y,dur); addPart({mark:1,x:end.x,y:end.y,r:q.r||90,col:col(q,c),t:dur,max:dur});
     swing(h,a-2,a+0.2,70,dur,c,'over');
@@ -2441,7 +2440,6 @@ function drawHero(h){
   if(h.swing && (wk==='arc'||wk==='spin'||wk==='rise'||wk==='over')){ const s=h.swing, f=Math.min(1,s.t/s.dur), e=1-Math.pow(1-f,3);
     const from=s.a0+(s.a1-s.a0)*Math.max(0,e-0.35), to=wa; ctx.globalAlpha=0.55; ctx.fillStyle=S.ring;
     ctx.beginPath(); ctx.arc(h.x,h.y,Math.min(wl,110)+h.r*0.3,Math.min(from,to),Math.max(from,to)); ctx.arc(h.x,h.y,h.r+4,Math.max(from,to),Math.min(from,to),true); ctx.closePath(); ctx.fill(); ctx.globalAlpha=1; }
-  drawWeapon(h,wa,wl,wk,school);
   if(h.swing && h.swing.kind==='cast' && !G.low){ ctx.globalAlpha=0.5; ctx.strokeStyle=S.color; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(h.x,h.y+h.r*0.6,h.r+12,0,TAU); ctx.stroke();
     for(let k=0;k<6;k++){ const a=gameT*3+k*1.047; ctx.beginPath(); ctx.moveTo(h.x+Math.cos(a)*(h.r+12),h.y+h.r*0.6+Math.sin(a)*(h.r+12)*0.5); ctx.lineTo(h.x+Math.cos(a+2.1)*(h.r+12),h.y+h.r*0.6+Math.sin(a+2.1)*(h.r+12)*0.5); ctx.stroke(); } ctx.globalAlpha=1; }
   // token
@@ -3791,7 +3789,19 @@ function fxUpdate(dt){
   }
 }
 const _update=update;
-update=function(dt){ _update(dt); if(G.mode==='camp'||G.mode==='lab') fxUpdate(dt); };
+function collideHero(){
+  const h=player; if(!h||h.tw||h.hopT>0||h.rollT>0||G.cut||(campOn()&&CAMP.over)) return;
+  for(let it=0;it<2;it++) for(const e of enemies){
+    if(!e.alive||e.held||e.thrown||e.z>6) continue;
+    let dx=h.x-e.x, dy=h.y-e.y, d=Math.hypot(dx,dy); const min=(h.r+e.r)*0.8;
+    if(d>=min) continue;
+    if(d<0.01){ dx=1; dy=0; d=1; }
+    const nx=dx/d, ny=dy/d, push=min-d; const px=h.x+nx*push, py=h.y+ny*push; let moved=false;
+    if(walkOk(px,h.y,h.r*0.7)){ h.x=px; moved=true; } if(walkOk(h.x,py,h.r*0.7)){ h.y=py; moved=true; }
+    if(!moved && !(e.brkMax>0)){ const ex=e.x-nx*push, ey=e.y-ny*push; if(walkOk(ex,e.y,e.r*0.6)) e.x=ex; if(walkOk(e.x,ey,e.r*0.6)) e.y=ey; }
+  }
+}
+update=function(dt){ _update(dt); if(player) collideHero(); if(G.mode==='camp'||G.mode==='lab') fxUpdate(dt); };
 const _clearAll=clearAll;
 clearAll=function(){ _clearAll(); eprojs.length=0; if(CAMP) CAMP.zones=[]; };
 const _syncCampUI=syncCampUI;
@@ -4000,16 +4010,19 @@ function syncFxButtons(){
   const sa=G.shakeAmt!=null?G.shakeAmt:1;
   for(const id of ['btnShake','btnShakeT']){ const b=$(id); if(b) b.textContent='SHAKE '+Math.round(sa*100)+'%'; }
   for(const id of ['btnFlash','btnFlashT']){ const b=$(id); if(b) b.textContent='FLASH '+(G.flashOn===false?'OFF':'ON'); }
+  { const b=$('btnZoom'); if(b) b.textContent='ZOOM '+(G.zoomSel?G.zoomSel.toFixed(2)+'x':'AUTO'); }
 }
-function saveFx(){ try{ localStorage.setItem('bd3fx37',JSON.stringify({shakeAmt:G.shakeAmt,flashOn:G.flashOn})); }catch(e){} }
+function saveFx(){ try{ localStorage.setItem('bd3fx37',JSON.stringify({shakeAmt:G.shakeAmt,flashOn:G.flashOn,zoomSel:G.zoomSel||null})); }catch(e){} }
 function initFx(){
-  try{ const s=JSON.parse(localStorage.getItem('bd3fx37')||'{}'); if(typeof s.shakeAmt==='number') G.shakeAmt=s.shakeAmt; if(typeof s.flashOn==='boolean') G.flashOn=s.flashOn; }catch(e){}
+  try{ const s=JSON.parse(localStorage.getItem('bd3fx37')||'{}'); if(typeof s.shakeAmt==='number') G.shakeAmt=s.shakeAmt; if(typeof s.flashOn==='boolean') G.flashOn=s.flashOn; if(typeof s.zoomSel==='number') G.zoomSel=s.zoomSel; }catch(e){}
+  resize();
   try{ const q=new URLSearchParams(location.search).get('seed'); if(q){ const s=q.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10); if(s) G.seed=s; } }catch(e){}
   const cyc=()=>{ const sa=G.shakeAmt!=null?G.shakeAmt:1; G.shakeAmt=sa>0.75?0.5:sa>0.25?0:1; saveFx(); syncFxButtons(); };
   const fl=()=>{ G.flashOn=(G.flashOn===false); saveFx(); syncFxButtons(); };
   for(const id of ['btnShake','btnShakeT']){ const b=$(id); if(b) b.onclick=cyc; }
   for(const id of ['btnFlash','btnFlashT']){ const b=$(id); if(b) b.onclick=fl; }
   const n2=$('btnNext2'); if(n2) n2.onclick=()=>{ if(campOn()){ nextRoom(1); syncCampUI(); } };
+  const zb=$('btnZoom'); if(zb) zb.onclick=()=>{ const Z=[null,0.75,0.9,1.1,1.4,1.7]; let i=Z.indexOf(G.zoomSel||null); G.zoomSel=Z[(i+1)%Z.length]; saveFx(); syncFxButtons(); resize(); };
   syncFxButtons();
 }
 
