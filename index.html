@@ -5489,7 +5489,7 @@ const EL49={
   Dark:    {c:'#b060ff', h:'#e6c8ff'}
 };
 const sd49=(s,i)=>{ const v=Math.sin((s||0)*12.9898+i*78.233)*43758.5453; return v-Math.floor(v); };
-const kk49=p=>Math.max(0,p.t/(p.max||p.t||1));
+const kk49=p=>Math.max(0,Math.min(1,p.t/(p.max||p.t||1)));
 function elOf49(h,q,c){ const el=(q&&q.el)||(h&&h.imbue&&h.imbue.t>0?h.imbue.el:(c&&c.school)); return EL49[el]?el:null; }
 function warm49(col,k){ /* white-hot -> element colour as k falls 1 -> 0 */ return k>0.6?'#ffffff':col; }
 
@@ -5650,14 +5650,19 @@ function ghost49(p){ const k=kk49(p); ctx.save(); ctx.globalCompositeOperation='
 
 const _dp49=drawPart;
 drawPart=function(p){
-  if(p.el49) return drawEl49(p);
-  if(p.thr) return thr49(p);
-  if(p.crack) return crack49(p);
-  if(p.rise) return rise49(p);
-  if(p.mark) return mark49(p);
-  if(p.markE) return markE49(p);
-  if(p.fall) return fall49(p);
-  return _dp49(p);
+  ctx.save();
+  try{
+    if(p.bd||p.b6) _dp49(p);            /* 4.5/4.6 parts (meteor uses a 'fall' field too) keep their own drawing */
+    else if(p.el49) drawEl49(p);
+    else if(p.thr) thr49(p);
+    else if(p.crack) crack49(p);
+    else if(p.rise) rise49(p);
+    else if(p.mark) mark49(p);
+    else if(p.markE) markE49(p);
+    else if(p.fall) fall49(p);
+    else _dp49(p);
+  }catch(err){ try{ reportErr(err); }catch(_){} }
+  finally{ ctx.restore(); ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1; }
 };
 
 /* ---------- ground waves (wv) ---------- */
